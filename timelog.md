@@ -31,4 +31,5 @@
 
 * *0.5 hour* Created GiHub repository and project file structure
 * *0.5 hour* Update markdown files for meetings/timelog and plan
+* *2 hours* Start of BPCS implementation. Get images, convert to arrays and slice bitplanes of vessel and secret. 
 
