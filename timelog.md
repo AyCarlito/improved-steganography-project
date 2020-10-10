@@ -1,9 +1,9 @@
 # Timelog
 
-* PROJECT NAME
-* YOUR NAME
-* STUDENT_ID
-* SUPERVISOR NAME
+* Improved Steganography Algorithm
+* Daniel Hislop
+* 2317990H
+* Dr Ron Poet
 
 ## Guidance
 
@@ -14,13 +14,21 @@
 
 ## Week 1
 
+## Week 2 
+
+### 1 Oct 2020
+
+* *0.5 hour* Background reading of relevant research paper
+* *0.5 hour* Creation of mindmap outlining initial thoughts of project and direction it should take
+
+### 2 Oct 2019
+
+* *0.5 hour* First meeting with supervisor. Recorded agreed thoughts on direction of project, outlined logistical details such as frequency of meetings. 
+
+## Week 3
+
 ### 19 Oct 2019
 
-* *4 hours* Read the project guidance notes
-* *0.5 hour* Created GitLab repository and cloned the cookiecutter for the projects
-* *1 hour* Modified dissertation template, compiled  
+* *0.5 hour* Created GiHub repository and project file structure
+* *0.5 hour* Update markdown files for meetings/timelog and plan
 
-## 20 Oct 2019
-
-* *1 hour* meeting with supervisor
-* *2 hours* writing initial version of test harness
