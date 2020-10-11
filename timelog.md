@@ -35,4 +35,4 @@
 
 ### 11 Oct 2019
 
-* *2 Hours* Seperated existing code into functions. Added function to determine complexity. Added funciton to create 8x8 blocks for each bitplane.
+* *2.5 Hours* Seperated existing code into functions. Added function to determine complexity. Added funciton to create 8x8 blocks for each bitplane.
