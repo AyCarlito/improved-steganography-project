@@ -29,12 +29,11 @@ vessel_arr = get_file("vessel")
 secret_arr = get_file("secret")
 
 #Slice bitplanes
-print("Slicing bitplanes of vessel")
+print("Getting binary encoding of vessel")
 vessel_bitplane_arr = numpy.zeros((vessel_arr.shape[0], vessel_arr.shape[1], 8))
 vessel_bitplane_arr[:,:,0] = numpy.copy(vessel_arr)
 
-print("Slicing bitplanes of secret")
-#Slice bitplanes of secret
+print("Getting binary encoding of secret")
 secret_bitplane_arr = numpy.zeros((secret_arr.shape[0], secret_arr.shape[1], 8))
 secret_bitplane_arr[:,:,0] = numpy.copy(secret_arr)
 
@@ -49,8 +48,23 @@ def getBitplaneArr(matrix):
 vessel_bitplane_arr = getBitplaneArr(vessel_bitplane_arr)
 secret_bitplane_arr = getBitplaneArr(secret_bitplane_arr)
 
-print(vessel_bitplane_arr[0:1,0:1])
-print(secret_bitplane_arr[0:1,0:1])
+
+def split_into_blocks(matrix):
+    print("Creating 8x8 Blocks for each bitplane")
+    for k in range(7, -1, -1):
+        for i in range(matrix.shape[0]//8):
+            for j in range(matrix.shape[1]//8):
+                data.append(matrix[i*8:i*8+8,j*8:j*8+8,k])
+        return data
+
+data = []
+data = split_into_blocks(secret_bitplane_arr)
+
+#Chop sceret into 8x8 bitplanes and place in queue
+
+# for i in range(secret_bitplane_arr.shape[0]/8):
+#     for j in range(secret_bitplane_arr.shape[1]/8)
+
 
 # for i in range(bitplane_arr.shape[0]):
 #     for j in range(bitplane_arr.shape[0]):
@@ -66,11 +80,6 @@ print(secret_bitplane_arr[0:1,0:1])
 #         for k in range(8):
 #             secret_bitplane_arr[i,j,k] = secret_bit_array[k]
 
-
-#Chop sceret into 8x8 bitplanes and place in queue
-
-# for i in range(secret_bitplane_arr.shape[0]/8):
-#     for j in range(secret_bitplane_arr.shape[1]/8)
 
 #find complex segements and replace
 
