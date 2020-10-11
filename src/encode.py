@@ -1,55 +1,36 @@
-import numpy
-import time
+import numpy as np
 from PIL import Image
 
-
-# #Open Images
-# print("Opening images")
-# vessel = Image.open("goldhill.bmp")
-# secret = Image.open("cameraman.bmp")
-
-# #Convert Images to arrays
-# print("Converting to arrays")
-# vessel_arr = numpy.array(vessel)
-# secret_arr = numpy.array(secret)
-
-# #Close Images
-# vessel.close()
-# secret.close()
-
 def get_file(name):
+    """
+    Takes a string parameter indicating file name.
+    Reads in file and converts to np array, closes image. Returns np array.
+    This function gets the vessel and secret object arrays. 
+    """
     print("Opening %s" % name)
     temp = Image.open("%s.bmp" % name)
-    temp_arr = numpy.array(temp)
+    temp_arr = np.array(temp)
     temp.close()
     return temp_arr
 
-
-vessel_arr = get_file("vessel")
-secret_arr = get_file("secret")
-
-#Slice bitplanes
-print("Getting binary encoding of vessel")
-vessel_bitplane_arr = numpy.zeros((vessel_arr.shape[0], vessel_arr.shape[1], 8))
-vessel_bitplane_arr[:,:,0] = numpy.copy(vessel_arr)
-
-print("Getting binary encoding of secret")
-secret_bitplane_arr = numpy.zeros((secret_arr.shape[0], secret_arr.shape[1], 8))
-secret_bitplane_arr[:,:,0] = numpy.copy(secret_arr)
-
-def getBitplaneArr(matrix):
+def get_bitplane_arr(matrix):
+    """
+    Gets binary encoding of each pixel.
+    512x512x8 matrix. -> 512x512 pixels. 8 -> binary value of pixel.
+    """
     for i in range(matrix.shape[0]):
         for j in range(matrix.shape[1]):
-            bit_array = numpy.unpackbits(numpy.uint8(matrix[i,j,0]))
+            bit_array = np.unpackbits(np.uint8(matrix[i,j,0]))
             for k in range(8):
                 matrix[i,j,k] = bit_array[k]
     return matrix
 
-vessel_bitplane_arr = getBitplaneArr(vessel_bitplane_arr)
-secret_bitplane_arr = getBitplaneArr(secret_bitplane_arr)
-
 
 def split_into_blocks(matrix):
+    """
+    Creates 8x8 blocks of pixels for each bitplane in the secret object
+    """
+    data = []
     print("Creating 8x8 Blocks for each bitplane")
     for k in range(7, -1, -1):
         for i in range(matrix.shape[0]//8):
@@ -57,30 +38,43 @@ def split_into_blocks(matrix):
                 data.append(matrix[i*8:i*8+8,j*8:j*8+8,k])
         return data
 
-data = []
-data = split_into_blocks(secret_bitplane_arr)
+def get_complexity(matrix):
+    current_complexity = 0
+    maximum_complexity = ((matrix.shape[0]-1) * matrix.shape[1]) + ((matrix.shape[1]-1) * matrix.shape[0])
+    top_left = matrix[0,0]
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            if top_left!=matrix[i,j]:
+                current_complexity+=1
+                top_left=matrix[i,j]
+    top_left = matrix[0,0]
+    for i in range(matrix.shape[1]):
+        for j in range(matrix.shape[0]):
+            if top_left!=matrix[j,i]:
+                current_complexity+=1
+                top_left=matrix[j,i]
+    return current_complexity/maximum_complexity
 
-#Chop sceret into 8x8 bitplanes and place in queue
+def main():
+    vessel_arr = get_file("vessel")
+    secret_arr = get_file("secret")
 
-# for i in range(secret_bitplane_arr.shape[0]/8):
-#     for j in range(secret_bitplane_arr.shape[1]/8)
+    print("Getting binary encoding of vessel")
+    vessel_bitplane_arr = np.zeros((vessel_arr.shape[0], vessel_arr.shape[1], 8))
+    vessel_bitplane_arr = get_bitplane_arr(vessel_bitplane_arr)
 
+    print("Getting binary encoding of secret")
+    secret_bitplane_arr = np.zeros((secret_arr.shape[0], secret_arr.shape[1], 8))
+    secret_bitplane_arr = get_bitplane_arr(secret_bitplane_arr)
 
-# for i in range(bitplane_arr.shape[0]):
-#     for j in range(bitplane_arr.shape[0]):
-#         bit_array= numpy.unpackbits(numpy.uint8(bitplane_arr[i,j,0]))
-#         for k in range(8):
-#             bitplane_arr[i,j,k] = bit_array[k]
-
-
-
-# for i in range(secret_bitplane_arr.shape[0]):
-#     for j in range(secret_bitplane_arr.shape[0]):
-#         secret_bit_array= numpy.unpackbits(numpy.uint8(secret_bitplane_arr[i,j,0]))
-#         for k in range(8):
-#             secret_bitplane_arr[i,j,k] = secret_bit_array[k]
+    data = split_into_blocks(secret_bitplane_arr)
 
 
+    complexity = get_complexity(vessel_arr)
+    print(complexity)
+
+
+main()
 #find complex segements and replace
 
 #Confirm all of secret was placed
