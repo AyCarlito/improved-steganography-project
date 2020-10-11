@@ -3,20 +3,30 @@ import time
 from PIL import Image
 
 
-#Open Images
-print("Opening images")
-vessel = Image.open("goldhill.bmp")
-secret = Image.open("cameraman.bmp")
+# #Open Images
+# print("Opening images")
+# vessel = Image.open("goldhill.bmp")
+# secret = Image.open("cameraman.bmp")
 
-#Convert Images to arrays
-print("Converting to arrays")
-vessel_arr = numpy.array(vessel)
-secret_arr = numpy.array(secret)
+# #Convert Images to arrays
+# print("Converting to arrays")
+# vessel_arr = numpy.array(vessel)
+# secret_arr = numpy.array(secret)
 
-#Close Images
-vessel.close()
-secret.close()
+# #Close Images
+# vessel.close()
+# secret.close()
 
+def get_file(name):
+    print("Opening %s" % name)
+    temp = Image.open("%s.bmp" % name)
+    temp_arr = numpy.array(temp)
+    temp.close()
+    return temp_arr
+
+
+vessel_arr = get_file("vessel")
+secret_arr = get_file("secret")
 
 #Slice bitplanes
 print("Slicing bitplanes of vessel")
@@ -38,6 +48,9 @@ def getBitplaneArr(matrix):
 
 vessel_bitplane_arr = getBitplaneArr(vessel_bitplane_arr)
 secret_bitplane_arr = getBitplaneArr(secret_bitplane_arr)
+
+print(vessel_bitplane_arr[0:1,0:1])
+print(secret_bitplane_arr[0:1,0:1])
 
 # for i in range(bitplane_arr.shape[0]):
 #     for j in range(bitplane_arr.shape[0]):
