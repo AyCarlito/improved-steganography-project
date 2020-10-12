@@ -18,12 +18,16 @@ def get_bitplane_arr(matrix):
     Gets binary encoding of each pixel.
     512x512x8 matrix. -> 512x512 pixels. 8 -> binary value of pixel.
     """
-    for i in range(matrix.shape[0]):
-        for j in range(matrix.shape[1]):
-            bit_array = np.unpackbits(np.uint8(matrix[i,j,0]))
-            for k in range(8):
-                matrix[i,j,k] = bit_array[k]
-    return matrix
+    binary_encoding = np.unpackbits(np.uint8(matrix[:,:,0]))
+    binary_encoding = np.reshape(binary_encoding,(matrix.shape[0],matrix.shape[1],8))
+    return binary_encoding
+    
+    # for i in range(matrix.shape[0]):
+    #     for j in range(matrix.shape[1]):
+    #         bit_array = np.unpackbits(np.uint8(matrix[i,j,0]))
+    #         for k in range(8):
+    #             matrix[i,j,k] = bit_array[k]
+    # return matrix
 
 
 def split_into_blocks(matrix):
@@ -61,10 +65,12 @@ def main():
 
     print("Getting binary encoding of vessel")
     vessel_bitplane_arr = np.zeros((vessel_arr.shape[0], vessel_arr.shape[1], 8))
+    vessel_bitplane_arr[:,:,0] = np.copy(vessel_arr)
     vessel_bitplane_arr = get_bitplane_arr(vessel_bitplane_arr)
 
     print("Getting binary encoding of secret")
     secret_bitplane_arr = np.zeros((secret_arr.shape[0], secret_arr.shape[1], 8))
+    secret_bitplane_arr[:,:,0] = np.copy(secret_arr)
     secret_bitplane_arr = get_bitplane_arr(secret_bitplane_arr)
 
     data = split_into_blocks(secret_bitplane_arr)
