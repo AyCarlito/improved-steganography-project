@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image
+import os
 
 def get_file(name):
     """
@@ -7,6 +8,7 @@ def get_file(name):
     Reads in file and converts to np array, closes image. Returns np array.
     This function gets the vessel and secret object arrays. 
     """
+    print(os.getcwd())
     print("Opening %s" % name)
     temp = Image.open("%s.bmp" % name)
     temp_arr = np.array(temp)
@@ -80,7 +82,7 @@ def main():
     print(complexity)
 
 
-main()
+
 #find complex segements and replace
 
 #Confirm all of secret was placed
