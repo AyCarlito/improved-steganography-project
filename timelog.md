@@ -21,18 +21,22 @@
 * *0.5 hour* Background reading of relevant research paper
 * *0.5 hour* Creation of mindmap outlining initial thoughts of project and direction it should take
 
-### 2 Oct 2019
+### 2 Oct 2020
 
 * *0.5 hour* First meeting with supervisor. Recorded agreed thoughts on direction of project, outlined logistical details such as frequency of meetings. 
 
 ## Week 3
 
-### 10 Oct 2019
+### 10 Oct 2020
 
 * *0.5 hour* Created GiHub repository and project file structure
 * *0.5 hour* Update markdown files for meetings/timelog and plan
 * *2 hours* Start of BPCS implementation. Get images, convert to arrays and slice bitplanes of vessel and secret. 
 
-### 11 Oct 2019
+### 11 Oct 2020
 
 * *2.5 Hours* Seperated existing code into functions. Added function to determine complexity. Added funciton to create 8x8 blocks for each bitplane.
+
+### 12 Oct 2020
+
+* *2.5 Hours* Added tests. Changed directory structure. Changed function to get bitplane array, now makes use of numpy indexing speed.
