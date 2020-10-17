@@ -60,10 +60,11 @@ def get_metadata(matrix, payload):
     remainder = np.zeros((1,9))
 
     meta_data = np.concatenate((np.concatenate((total_blocks, height), axis=0), np.concatenate((width, remainder), axis=0)))
+
     return meta_data
 
 def conjugate(matrix):
-    checkerboard = np.reshape(np.tile([1,0], 32), (8,8))
+    checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
     for index, value in np.ndenumerate(checkerboard):
         matrix[index] = checkerboard[index]^matrix[index]
     return matrix
@@ -81,13 +82,14 @@ def find_and_replace(vessel, secret, payload):
                             meta_data = get_metadata(secret, payload)
                             vessel[i*9:i*9+9,j*9:j*9+9,k] = meta_data
                             got_metadata = True
-                        payload_block = np.copy(payload[0])
-                        vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
-                        vessel[i*9+8,j*9+8,k] = 0
-                        payload.pop(0)
+                        else:
+                            payload_block = np.copy(payload[0])
+                            vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
+                            vessel[i*9+8,j*9+8,k] = 0
+                            payload.pop(0)
                     if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) <= 0.45):
                         vessel[i*9:i*9+8,j*9:j*9+8,k] = conjugate(vessel[i*9:i*9+8,j*9:j*9+8,k])
-                        vessel[i*9+8,j*9+8,k] = 1
+                        vessel[i*9+8,j*9+8,k] = 1  
                 else:
                     return vessel
     return vessel
@@ -112,10 +114,10 @@ def main():
     print("Complexity of vessel image: %f" % complexity)
 
     stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data)
-    stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
+    # stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
     
-    stego = Image.fromarray(stego_array, mode="L")
-    stego.save("stego.bmp")
+    # stego = Image.fromarray(stego_array, mode="L")
+    # stego.save("stego.bmp")
 
 main()
 
