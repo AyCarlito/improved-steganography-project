@@ -39,8 +39,8 @@ def split_into_blocks(matrix):
 def get_complexity(matrix):
     current_complexity = 0
     maximum_complexity = ((matrix.shape[0]-1) * matrix.shape[1]) + ((matrix.shape[1]-1) * matrix.shape[0])
-    current_pixel = matrix[0,0]
 
+    current_pixel = matrix[0,0]
     for index, value in np.ndenumerate(matrix):
         if current_pixel!=matrix[index]:
             current_complexity+=1
@@ -53,27 +53,46 @@ def get_complexity(matrix):
             current_pixel=matrix[index]
     return current_complexity/maximum_complexity
 
-    # for i in range(matrix.shape[0]):
-    #     for j in range(matrix.shape[1]):
-    #         if current_pixel!=matrix[i,j]:
-    #             current_complexity+=1
-    #             current_pixel=matrix[i,j]
-    # current_pixel = matrix[0,0]
-    # for i in range(matrix.shape[1]):
-    #     for j in range(matrix.shape[0]):
-    #         if current_pixel!=matrix[j,i]:
-    #             current_complexity+=1
-    #             current_pixel=matrix[j,i]
-    # return current_complexity/maximum_complexity
+def get_metadata(matrix, payload):
+    total_blocks = np.reshape(np.array([int(i) for i in (np.binary_repr(len(payload), width=36))]), (4,9))
+    height = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[0], width=18))]), (2,9))
+    width = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[1], width=18))]), (2,9))
+    remainder = np.zeros((1,9))
 
-# def find_and_replace(matrix, payload):
-#     for k in range(7, -1, -1):
-#         for i in range(matrix.shape[0]/9):
-#             for j in range(matrix.shape[1]/9):
-#                 if(get_complexity(matrix[i*9:i*9+8,j*9:j*9+8,k]) > 0.45))
+    meta_data = np.concatenate((np.concatenate((total_blocks, height), axis=0), np.concatenate((width, remainder), axis=0)))
+    return meta_data
+
+def conjugate(matrix):
+    checkerboard = np.reshape(np.tile([1,0], 32), (8,8))
+    for index, value in np.ndenumerate(checkerboard):
+        matrix[index] = checkerboard[index]^matrix[index]
+    return matrix
+
+
+def find_and_replace(vessel, secret, payload):
+    got_metadata = False
+
+    for k in range(7, -1, -1):
+        for i in range(vessel.shape[0]//9):
+            for j in range(vessel.shape[1]//9):
+                if(len(payload)>0):
+                    if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) > 0.45):
+                        if not got_metadata:
+                            meta_data = get_metadata(secret, payload)
+                            vessel[i*9:i*9+9,j*9:j*9+9,k] = meta_data
+                            got_metadata = True
+                        payload_block = np.copy(payload[0])
+                        vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
+                        vessel[i*9+8,j*9+8,k] = 0
+                        payload.pop(0)
+                    if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) <= 0.45):
+                        vessel[i*9:i*9+8,j*9:j*9+8,k] = conjugate(vessel[i*9:i*9+8,j*9:j*9+8,k])
+                        vessel[i*9+8,j*9+8,k] = 1
+                else:
+                    return vessel
+    return vessel
+
                     
-              
-
 def main():
     vessel_arr = get_file("vessel")
     secret_arr = get_file("secret")
@@ -89,10 +108,14 @@ def main():
     secret_bitplane_arr = get_bitplane_arr(secret_bitplane_arr)
 
     data = split_into_blocks(secret_bitplane_arr)
-
-
     complexity = get_complexity(vessel_arr)
-    print(complexity)
+    print("Complexity of vessel image: %f" % complexity)
+
+    stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data)
+    stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
+    
+    stego = Image.fromarray(stego_array, mode="L")
+    stego.save("stego.bmp")
 
 main()
 
