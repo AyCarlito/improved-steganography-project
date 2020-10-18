@@ -42,29 +42,28 @@ def get_complexity(matrix):
 
     current_pixel = matrix[0,0]
     for index, value in np.ndenumerate(matrix):
-        if current_pixel!=matrix[index]:
+        if current_pixel!=value:
             current_complexity+=1
-            current_pixel=matrix[index]
+            current_pixel=value
 
     current_pixel = matrix[0,0]
     for index, value in np.ndenumerate(matrix.transpose()):
-        if current_pixel!=matrix[index]:
+        if current_pixel!=value:
             current_complexity+=1
-            current_pixel=matrix[index]
+            current_pixel=value
     return current_complexity/maximum_complexity
 
 def get_metadata(matrix, payload):
     total_blocks = np.reshape(np.array([int(i) for i in (np.binary_repr(len(payload), width=36))]), (4,9))
     height = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[0], width=18))]), (2,9))
     width = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[1], width=18))]), (2,9))
-    remainder = np.zeros((1,9))
+    remainder = np.zeros((1,9), dtype=int)
 
     meta_data = np.concatenate((np.concatenate((total_blocks, height), axis=0), np.concatenate((width, remainder), axis=0)))
-
     return meta_data
 
 def conjugate(matrix):
-    checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
+    checkerboard = np.fliplr(np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2)
     for index, value in np.ndenumerate(checkerboard):
         matrix[index] = checkerboard[index]^matrix[index]
     return matrix
@@ -72,27 +71,46 @@ def conjugate(matrix):
 
 def find_and_replace(vessel, secret, payload):
     got_metadata = False
-
     for k in range(7, -1, -1):
         for i in range(vessel.shape[0]//9):
             for j in range(vessel.shape[1]//9):
                 if(len(payload)>0):
+                    is_conjugated = 0
                     if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) > 0.45):
+                        payload_block = np.copy(payload[0])
                         if not got_metadata:
                             meta_data = get_metadata(secret, payload)
-                            vessel[i*9:i*9+9,j*9:j*9+9,k] = meta_data
+                            payload_block = meta_data
+                        if (get_complexity(payload_block) < 0.45):
+                            payload_block = conjugate(payload_block)
+                            is_conjugated = 1
+    
+                        if not got_metadata:
+                            vessel[i*9:i*9+9,j*9:j*9+9,k] = payload_block
+                            vessel[i*9+8, j*9+8, k] = is_conjugated
                             got_metadata = True
-                        else:
-                            payload_block = np.copy(payload[0])
-                            vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
-                            vessel[i*9+8,j*9+8,k] = 0
                             payload.pop(0)
-                    if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) <= 0.45):
-                        vessel[i*9:i*9+8,j*9:j*9+8,k] = conjugate(vessel[i*9:i*9+8,j*9:j*9+8,k])
-                        vessel[i*9+8,j*9+8,k] = 1  
-                else:
-                    return vessel
-    return vessel
+                        else:
+                            vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
+                            vessel[i*9+8, j*9+8, k] = is_conjugated
+                            payload.pop(0)
+                        # if not got_metadata:
+                        #     meta_data = get_metadata(secret, payload)
+                        #     vessel[i*9:i*9+9,j*9:j*9+9,k] = meta_data
+                        #     got_metadata = True
+                        # else:
+                        #     payload_block = np.copy(payload[0])
+                        #     vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
+                        #     vessel[i*9+8,j*9+8,k] = 0
+                        #     payload.pop(0)
+                        # if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) <= 0.45):
+                        #     vessel[i*9:i*9+8,j*9:j*9+8,k] = conjugate(vessel[i*9:i*9+8,j*9:j*9+8,k])
+                        #     vessel[i*9+8,j*9+8,k] = 1  
+    if len(payload)>0:
+        print("Not enough complex regions")
+        return vessel
+    else:
+        return vessel
 
                     
 def main():
@@ -109,15 +127,16 @@ def main():
     secret_bitplane_arr[:,:,0] = np.copy(secret_arr)
     secret_bitplane_arr = get_bitplane_arr(secret_bitplane_arr)
 
+
     data = split_into_blocks(secret_bitplane_arr)
     complexity = get_complexity(vessel_arr)
     print("Complexity of vessel image: %f" % complexity)
 
     stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data)
-    # stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
+    stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
     
-    # stego = Image.fromarray(stego_array, mode="L")
-    # stego.save("stego.bmp")
+    stego = Image.fromarray(stego_array, mode="L")
+    stego.save("stego.bmp")
 
 main()
 

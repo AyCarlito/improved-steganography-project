@@ -51,7 +51,7 @@ def split_into_blocks(matrix):
     return data
 
 def conjugate(matrix):
-    checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
+    checkerboard = np.fliplr(np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2)
     for index, value in np.ndenumerate(checkerboard):
         matrix[index] = checkerboard[index]^matrix[index]
     return matrix
@@ -61,6 +61,8 @@ def extract_meta_data(payload):
     if meta_data[8,8] == 1:
         meta_data = conjugate(meta_data)
         meta_data[8,8]=0
+    
+    payload.pop(0)
     total_blocks = np.ravel(meta_data[:4,:])
     height = np.ravel(meta_data[4:6,:])
     width = np.ravel(meta_data[6:8,:])
@@ -70,10 +72,24 @@ def extract_meta_data(payload):
     width = int("".join(str(elem) for elem in width), 2)
 
 
-    print(total_blocks)
+    return (total_blocks, height, width)
 
-    return meta_data
+def extract_payload(meta_data, payload):
+    secret_payload_arr = np.zeros((meta_data[1], meta_data[2], 8), dtype="uint8")
+    blocks_retrieved = 0
 
+    for k in range(7, -1, -1):
+        for i in range(meta_data[1]//8):
+            for j in range(meta_data[2]//8):
+                if (blocks_retrieved < meta_data[0]):
+                    block = payload[0]
+                    if block[8,8] == 1:
+                        block = conjugate(block)
+                        block[8,8] = 0
+                    secret_payload_arr[i*8:i*8+8, j*8:j*8+8, k] = block[:8,:8]
+                    blocks_retrieved+=1
+                    payload.pop(0)
+    return secret_payload_arr           
 
 def main():
     stego_arr = get_file("stego")
@@ -82,9 +98,14 @@ def main():
     stego_bitplane_arr[:,:,0] = np.copy(stego_arr)
     stego_bitplane_arr = get_bitplane_arr(stego_bitplane_arr)
 
-
-    print(conjugate(stego_bitplane_arr[0:9,18:27,7]))
     data = split_into_blocks(stego_bitplane_arr)
     meta_data = extract_meta_data(data)
+
+
+    secret_payload_arr = extract_payload(meta_data, data)
+    secret_payload_arr = np.packbits(secret_payload_arr[:,:]).reshape((meta_data[1], meta_data[2]))
+
+    extracted = Image.fromarray(secret_payload_arr)
+    extracted.save("extracted.bmp")
 
 main()
