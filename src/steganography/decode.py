@@ -63,9 +63,15 @@ def conjugate(matrix):
 def extract_meta_data(payload):
     meta_data = payload[0]  
     if meta_data[8,8] == 1:
-        meta_data = conjugate(meta_data)
+        for cBi in range(9):
+            for cBj in range(9):
+                if((cBi + cBj)%2 == 0):
+                    if(meta_data[cBi,cBj] == 0):
+                        meta_data[cBi,cBj] = 1
+                    elif(meta_data[cBi,cBj] == 1):
+                        meta_data[cBi,cBj] = 0
         meta_data[8,8]=0
-    
+
     payload.pop(0)
     total_blocks = np.ravel(meta_data[:4,:])
     height = np.ravel(meta_data[4:6,:])
@@ -75,6 +81,7 @@ def extract_meta_data(payload):
     height = int("".join(str(elem) for elem in height), 2)
     width = int("".join(str(elem) for elem in width), 2)
 
+    print(total_blocks)
 
     return (total_blocks, height, width)
 

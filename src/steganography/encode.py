@@ -62,15 +62,15 @@ def get_metadata(matrix, payload):
     meta_data = np.concatenate((np.concatenate((total_blocks, height), axis=0), np.concatenate((width, remainder), axis=0)))
     return meta_data
 
-def conjugate(matrix):
-    checkerboard = np.zeros((8,8), np.int32)
-    checkerboard[::2,::2] = 1
-    checkerboard[1::2,1::2] = 1
-   # checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
-    for index, value in np.ndenumerate(checkerboard):
-        xor_result = (checkerboard[index]^matrix[index])
-        matrix[index] = xor_result
-    return matrix
+# def conjugate(matrix):
+#     checkerboard = np.zeros((8,8), np.int32)
+#     checkerboard[::2,::2] = 1
+#     checkerboard[1::2,1::2] = 1
+#    # checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
+#     for index, value in np.ndenumerate(checkerboard):
+#         xor_result = (checkerboard[index]^matrix[index])
+#         matrix[index] = xor_result
+#     return matrix
 
 
 def find_and_replace(vessel, secret, payload):
@@ -98,8 +98,7 @@ def find_and_replace(vessel, secret, payload):
                                             vessel[i*9+cBi,j*9+cBj,k] = 1
                                         elif(vessel[i*9+cBi,j*9+cBj,k] == 1):
                                             vessel[i*9+cBi,j*9+cBj,k] = 0
-                            vessel[i*9+8, j*9+8, k] = 1
-                        
+                            vessel[i*9+8, j*9+8, k] = 1                
                         # if not got_metadata:
                         #     vessel[i*9:i*9+9,j*9:j*9+9,k] = payload_block
                         #     vessel[i*9+8, j*9+8, k] = is_conjugated
