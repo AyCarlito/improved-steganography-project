@@ -47,13 +47,17 @@ def split_into_blocks(matrix):
         for i in range(matrix.shape[0]//9):
             for j in range(matrix.shape[1]//9):
                 if(get_complexity(matrix[i*9:i*9+8,j*9:j*9+8,k]) > 0.45):
-                    data.append(matrix[i*9:i*9+9,j*9:j*9+9,k])
+                    data.append(matrix[i*9:i*9+9,j*9:j*9+9,k])               
     return data
 
 def conjugate(matrix):
-    checkerboard = np.fliplr(np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2)
+    checkerboard = np.zeros((8,8), np.int32)
+    checkerboard[::2,::2] = 1
+    checkerboard[1::2,1::2] = 1
+    #checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
     for index, value in np.ndenumerate(checkerboard):
-        matrix[index] = checkerboard[index]^matrix[index]
+        xor_result = (checkerboard[index]^matrix[index])
+        matrix[index] = xor_result
     return matrix
 
 def extract_meta_data(payload):
@@ -84,9 +88,11 @@ def extract_payload(meta_data, payload):
                 if (blocks_retrieved < meta_data[0]):
                     block = payload[0]
                     if block[8,8] == 1:
-                        block = conjugate(block)
                         block[8,8] = 0
-                    secret_payload_arr[i*8:i*8+8, j*8:j*8+8, k] = block[:8,:8]
+                        block = conjugate(block[:8,:8])
+                    else:
+                        block = block[:8,:8]
+                    secret_payload_arr[i*8:i*8+8, j*8:j*8+8, k] = block
                     blocks_retrieved+=1
                     payload.pop(0)
     return secret_payload_arr           
@@ -102,8 +108,8 @@ def main():
     meta_data = extract_meta_data(data)
 
 
-    secret_payload_arr = extract_payload(meta_data, data)
-    secret_payload_arr = np.packbits(secret_payload_arr[:,:]).reshape((meta_data[1], meta_data[2]))
+    payload_arr = extract_payload(meta_data, data)
+    secret_payload_arr = np.packbits(payload_arr[:,:]).reshape((meta_data[1], meta_data[2]))
 
     extracted = Image.fromarray(secret_payload_arr)
     extracted.save("extracted.bmp")

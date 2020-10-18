@@ -63,9 +63,13 @@ def get_metadata(matrix, payload):
     return meta_data
 
 def conjugate(matrix):
-    checkerboard = np.fliplr(np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2)
+    checkerboard = np.zeros((8,8), np.int32)
+    checkerboard[::2,::2] = 1
+    checkerboard[1::2,1::2] = 1
+   # checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
     for index, value in np.ndenumerate(checkerboard):
-        matrix[index] = checkerboard[index]^matrix[index]
+        xor_result = (checkerboard[index]^matrix[index])
+        matrix[index] = xor_result
     return matrix
 
 
@@ -77,35 +81,33 @@ def find_and_replace(vessel, secret, payload):
                 if(len(payload)>0):
                     is_conjugated = 0
                     if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) > 0.45):
-                        payload_block = np.copy(payload[0])
                         if not got_metadata:
                             meta_data = get_metadata(secret, payload)
                             payload_block = meta_data
-                        if (get_complexity(payload_block) < 0.45):
-                            payload_block = conjugate(payload_block)
-                            is_conjugated = 1
-    
-                        if not got_metadata:
                             vessel[i*9:i*9+9,j*9:j*9+9,k] = payload_block
-                            vessel[i*9+8, j*9+8, k] = is_conjugated
                             got_metadata = True
-                            payload.pop(0)
                         else:
-                            vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
-                            vessel[i*9+8, j*9+8, k] = is_conjugated
+                            payload_block = np.copy(payload[0])
                             payload.pop(0)
+                            vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
+                        if (get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) <= 0.45):
+                            for cBi in range(9):
+                                for cBj in range(9):
+                                    if((cBi + cBj)%2 == 0):
+                                        if(vessel[i*9+cBi,j*9+cBj,k] == 0):
+                                            vessel[i*9+cBi,j*9+cBj,k] = 1
+                                        elif(vessel[i*9+cBi,j*9+cBj,k] == 1):
+                                            vessel[i*9+cBi,j*9+cBj,k] = 0
+                            vessel[i*9+8, j*9+8, k] = 1
+                        
                         # if not got_metadata:
-                        #     meta_data = get_metadata(secret, payload)
-                        #     vessel[i*9:i*9+9,j*9:j*9+9,k] = meta_data
+                        #     vessel[i*9:i*9+9,j*9:j*9+9,k] = payload_block
+                        #     vessel[i*9+8, j*9+8, k] = is_conjugated
                         #     got_metadata = True
-                        # else:
-                        #     payload_block = np.copy(payload[0])
-                        #     vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
-                        #     vessel[i*9+8,j*9+8,k] = 0
                         #     payload.pop(0)
-                        # if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) <= 0.45):
-                        #     vessel[i*9:i*9+8,j*9:j*9+8,k] = conjugate(vessel[i*9:i*9+8,j*9:j*9+8,k])
-                        #     vessel[i*9+8,j*9+8,k] = 1  
+                        # else:
+                        #     vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
+                        #     vessel[i*9+8, j*9+8, k] = is_conjugated
     if len(payload)>0:
         print("Not enough complex regions")
         return vessel
@@ -127,14 +129,17 @@ def main():
     secret_bitplane_arr[:,:,0] = np.copy(secret_arr)
     secret_bitplane_arr = get_bitplane_arr(secret_bitplane_arr)
 
-
     data = split_into_blocks(secret_bitplane_arr)
     complexity = get_complexity(vessel_arr)
     print("Complexity of vessel image: %f" % complexity)
 
     stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data)
     stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
-    
+
+    with open('my_array.txt', 'w') as f:
+        for item in stego_array:
+            f.write("%s\n" % item)
+
     stego = Image.fromarray(stego_array, mode="L")
     stego.save("stego.bmp")
 
