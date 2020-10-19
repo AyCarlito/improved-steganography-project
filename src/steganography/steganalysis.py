@@ -10,10 +10,14 @@ def complexity(data):
         complexities.append(encode.get_complexity(block))
     return complexities
 
+def get_probability(value, total):
+    return (value/total)
+
+
 def plot(x, y, gtitle, xtitle, ytitle):
     print("Plotting graph")
     fig = go.Figure()   
-    fig.add_trace(go.Scattergl(x=x, y=y, mode='lines', name='lines'))
+    fig.add_trace(go.Scattergl(x=x, y=y, mode='markers', name='markers'))
     fig.update_layout(
         title=gtitle,
         xaxis_title=xtitle,
@@ -48,13 +52,28 @@ def main():
     vessel_complexities = complexity(vessel_data)
     stego_complexities = complexity(stego_data)
 
-    vessel_pixel_values, vessel_pixel_counts = np.unique(vessel_arr, return_counts=True)
-    stego_pixel_values, stego_pixel_counts = np.unique(stego_arr, return_counts=True)
+    unique, counts = np.unique(vessel_complexities, return_counts=True)
+    count_dict = dict(zip(unique, counts))
+    total = sum(count_dict.values())
+    vessel_probilities = []
 
-    plot(vessel_pixel_values, vessel_pixel_counts, "Pixel Value Histogram of Vessel Image", "Pixel values", " Occurences of Values")
+    for key, value in count_dict.items():
+        vessel_probilities.append(get_probability(value, total))
+    
+    unique, counts = np.unique(stego_complexities, return_counts=True)
+    count_dict = dict(zip(unique, counts))
+    total = sum(count_dict.values())
+    stego_probilities = []
+
+    for key, value in count_dict.items():
+        stego_probilities.append(get_probability(value, total))
+    
+    plot(vessel_complexities, vessel_probilities, "Probability Histogram of Vessel Image", "Complexity", "Probability")
+    plot(stego_complexities, stego_probilities, "Probability Histogram of Stego Image", "Complexity", "Probability")
+   # plot(vessel_pixel_values, vessel_pixel_counts, "Pixel Value Histogram of Vessel Image", "Pixel values", " Occurences of Values")
     plot(np.arange(len(vessel_data)), vessel_complexities, "Complexity Histogram of Vessel Image", "8x8 Blocks", "Complexity of Block")
 
-    plot(stego_pixel_values, stego_pixel_counts, "Pixel Value Histogram of Stego Image", "Pixel values", " Occurences of Values")
+   # plot(stego_pixel_values, stego_pixel_counts, "Pixel Value Histogram of Stego Image", "Pixel values", " Occurences of Values")
     plot(np.arange(len(stego_data)), stego_complexities, "Complexity Histogram of Stego Image", "8x8 Blocks", "Complexity of Block")
 
 main()
