@@ -1,21 +1,21 @@
 # Plan
 
-* PROJECT TITLE
-* YOUR NAME
-* STUDENT ID
-* SUPERVISOR NAME
+* Improved Steganography Algorithm
+* Daniel Hislop
+* 2317990H
+* Dr Ron Poet
 
 Week-by-week plan for the whole project. Update this as you go along.
 
 ## Winter semester
 
 * **Week 1**
-* **Week 2**
-* **Week 3**
-* **Week 4**
-* **Week 5**
-* **Week 6**
-* **Week 7**
+* **Week 2** Perform background reading in advance of first meeting, decide on improvements to be made.
+* **Week 3** Begin implementation of BPCS algorithm.
+* **Week 4** Finish Implementation of Standard Algrithm
+* **Week 5** Improved Algorithm
+* **Week 6** Steganalysis Tool
+* **Week 7** Image Compression
 * **Week 8**
 * **Week 9**
 * **Week 10**
