@@ -65,9 +65,9 @@ def extract_meta_data(payload):
         meta_data = conjugate(meta_data)
         meta_data[8,8]=0
 
-    total_blocks = np.ravel(meta_data[:3,:])
-    height = np.ravel(meta_data[3:5,:])
-    width = np.ravel(meta_data[5:7,:])
+    total_blocks = np.ravel(meta_data[:4,:])
+    height = np.ravel(meta_data[4:6,:])
+    width = np.ravel(meta_data[6:8,:])
 
 
     total_blocks = int("".join(str(elem) for elem in total_blocks), 2)

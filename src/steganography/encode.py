@@ -54,23 +54,21 @@ def get_complexity(matrix):
     return current_complexity/maximum_complexity
 
 def get_metadata(matrix, payload):
-    total_blocks = np.reshape(np.array([int(i) for i in (np.binary_repr(len(payload), width=27))]), (3,9))
+    total_blocks = np.reshape(np.array([int(i) for i in (np.binary_repr(len(payload), width=36))]), (4,9))
     height = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[0], width=18))]), (2,9))
     width = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[1], width=18))]), (2,9))
-    remainder = np.zeros((2,9), dtype=int)
+    remainder = np.zeros((1,9), dtype=int)
 
     meta_data = np.concatenate((np.concatenate((total_blocks, height), axis=0), np.concatenate((width, remainder), axis=0)))
     return meta_data
 
-# def conjugate(matrix):
-#     checkerboard = np.zeros((8,8), np.int32)
-#     checkerboard[::2,::2] = 1
-#     checkerboard[1::2,1::2] = 1
-#    # checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
-#     for index, value in np.ndenumerate(checkerboard):
-#         xor_result = (checkerboard[index]^matrix[index])
-#         matrix[index] = xor_result
-#     return matrix
+def conjugate(matrix):
+
+    checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
+    ones = np.ones((matrix.shape[0], matrix.shape[1]))
+    conjugated = np.logical_xor(checkerboard, matrix).astype(int)
+    conjugated = np.logical_xor(conjugated,ones).astype(int)
+    return conjugated
 
 
 def find_and_replace(vessel, secret, payload):
@@ -84,29 +82,19 @@ def find_and_replace(vessel, secret, payload):
                             meta_data = get_metadata(secret, payload)
                             payload_block = meta_data
                             vessel[i*9:i*9+9,j*9:j*9+9,k] = payload_block
-                            got_metadata = True
                         else:
                             payload_block = np.copy(payload[0])
                             payload.pop(0)
                             vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
                             vessel[i*9+8, j*9+8, k] = 0
                         if (get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) <= 0.45):
-                            for cBi in range(9):
-                                for cBj in range(9):
-                                    if((cBi + cBj)%2 == 0):
-                                        if(vessel[i*9+cBi,j*9+cBj,k] == 0):
-                                            vessel[i*9+cBi,j*9+cBj,k] = 1
-                                        elif(vessel[i*9+cBi,j*9+cBj,k] == 1):
-                                            vessel[i*9+cBi,j*9+cBj,k] = 0
-                            vessel[i*9+8, j*9+8, k] = 1                
-                        # if not got_metadata:
-                        #     vessel[i*9:i*9+9,j*9:j*9+9,k] = payload_block
-                        #     vessel[i*9+8, j*9+8, k] = is_conjugated
-                        #     got_metadata = True
-                        #     payload.pop(0)
-                        # else:
-                        #     vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
-                        #     vessel[i*9+8, j*9+8, k] = is_conjugated
+                            if not got_metadata:
+                                vessel[i*9:i*9+9,j*9:j*9+9,k] = conjugate(vessel[i*9:i*9+9,j*9:j*9+9,k])
+                                vessel[i*9+8, j*9+8, k] = 1
+                                got_metadata = True
+                            else:
+                                vessel[i*9:i*9+8,j*9:j*9+8,k] = conjugate(vessel[i*9:i*9+8,j*9:j*9+8,k])
+                                vessel[i*9+8, j*9+8, k] = 1    
     if len(payload)>0:
         print("Not enough complex regions")
         return vessel
@@ -140,9 +128,4 @@ def main():
 
 main()
 
-#find complex segements and replace
-
-#Confirm all of secret was placed
-
-#Create new image with embedded secret
 
