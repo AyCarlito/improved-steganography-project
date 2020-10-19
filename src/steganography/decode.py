@@ -50,27 +50,19 @@ def split_into_blocks(matrix):
                     data.append(matrix[i*9:i*9+9,j*9:j*9+9,k])               
     return data
 
-# def conjugate(matrix):
-#     checkerboard = np.zeros((8,8), np.int32)
-#     checkerboard[::2,::2] = 1
-#     checkerboard[1::2,1::2] = 1
-#     #checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
-#     for index, value in np.ndenumerate(checkerboard):
-#         xor_result = (checkerboard[index]^matrix[index])
-#         matrix[index] = xor_result
-#     return matrix
+def conjugate(matrix):
+
+    checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
+    ones = np.ones((matrix.shape[0], matrix.shape[1]))
+    conjugated = np.logical_xor(checkerboard, matrix).astype(int)
+    conjugated = np.logical_xor(conjugated,ones).astype(int)
+    return conjugated
 
 def extract_meta_data(payload):
     meta_data = payload[0]  
     payload.pop(0)
     if meta_data[8,8] == 1:
-        for cBi in range(9):
-            for cBj in range(9):
-                if((cBi + cBj)%2 == 0):
-                    if(meta_data[cBi,cBj] == 0):
-                        meta_data[cBi,cBj] = 1
-                    elif(meta_data[cBi,cBj] == 1):
-                        meta_data[cBi,cBj] = 0
+        meta_data = conjugate(meta_data)
         meta_data[8,8]=0
 
     total_blocks = np.ravel(meta_data[:3,:])
@@ -95,15 +87,8 @@ def extract_payload(meta_data, payload):
                     block = payload[0]
                     payload.pop(0)
                     if (block[8,8] == 1):
-                        for dSi in range(9):
-                            for dSj in range(9):
-                                if((dSi + dSj)%2 == 0):
-                                    if(block[dSi,dSj] == 0):
-                                        block[dSi,dSj] = 1
-                                    elif(block[dSi,dSj] == 1):
-                                        block[dSi,dSj] = 0
+                        block = conjugate(block)
                         block[8,8] = 0
-
                     secret_payload_arr[i*8:i*8+8, j*8:j*8+8, k] = block[:8,:8]
                     blocks_retrieved+=1
     return secret_payload_arr           
