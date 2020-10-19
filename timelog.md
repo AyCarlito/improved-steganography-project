@@ -40,3 +40,15 @@
 ### 12 Oct 2020
 
 * *2.5 Hours* Added tests. Changed directory structure. Changed function to get bitplane array, now makes use of numpy indexing speed.
+
+### 17 Oct 2020
+
+* *5 Hours* Added replacement and conjugation functions. Modified complexity function.
+
+### 18 Oct 2020
+
+* *3 Hours* Started decoding.py. Having problem recovering image. Able to get metadata, but image not being displayed correctly.
+
+### 19 Oct 2020
+
+* *2 Hours* Working encoding and decoding algorithms. Fixed previous day's issue by modifying complexity function. Also improved conugation function to make use of numpy indexing speed. 
