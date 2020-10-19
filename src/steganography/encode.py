@@ -54,10 +54,10 @@ def get_complexity(matrix):
     return current_complexity/maximum_complexity
 
 def get_metadata(matrix, payload):
-    total_blocks = np.reshape(np.array([int(i) for i in (np.binary_repr(len(payload), width=36))]), (4,9))
+    total_blocks = np.reshape(np.array([int(i) for i in (np.binary_repr(len(payload), width=27))]), (3,9))
     height = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[0], width=18))]), (2,9))
     width = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[1], width=18))]), (2,9))
-    remainder = np.zeros((1,9), dtype=int)
+    remainder = np.zeros((2,9), dtype=int)
 
     meta_data = np.concatenate((np.concatenate((total_blocks, height), axis=0), np.concatenate((width, remainder), axis=0)))
     return meta_data
@@ -79,7 +79,6 @@ def find_and_replace(vessel, secret, payload):
         for i in range(vessel.shape[0]//9):
             for j in range(vessel.shape[1]//9):
                 if(len(payload)>0):
-                    is_conjugated = 0
                     if(get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) > 0.45):
                         if not got_metadata:
                             meta_data = get_metadata(secret, payload)
@@ -90,6 +89,7 @@ def find_and_replace(vessel, secret, payload):
                             payload_block = np.copy(payload[0])
                             payload.pop(0)
                             vessel[i*9:i*9+8,j*9:j*9+8,k] = payload_block
+                            vessel[i*9+8, j*9+8, k] = 0
                         if (get_complexity(vessel[i*9:i*9+8,j*9:j*9+8,k]) <= 0.45):
                             for cBi in range(9):
                                 for cBj in range(9):
@@ -134,10 +134,6 @@ def main():
 
     stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data)
     stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
-
-    with open('my_array.txt', 'w') as f:
-        for item in stego_array:
-            f.write("%s\n" % item)
 
     stego = Image.fromarray(stego_array, mode="L")
     stego.save("stego.bmp")
