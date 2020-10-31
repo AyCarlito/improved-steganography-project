@@ -1,6 +1,15 @@
 import numpy as np
 from PIL import Image
 import os
+import argparse
+
+def get_arguments():
+    parser = argparse.ArgumentParser(description="BPCS Decoding tool")
+    parser.add_argument("c", type=str, help="Cover Image")
+    parser.add_argument("m", type=str, help="Algorithm. Standard or Improved")
+
+    args = parser.parse_args()
+    return args.c, args.m
 
 def get_file(name):
     """
@@ -40,13 +49,13 @@ def get_complexity(matrix):
             current_pixel=value
     return current_complexity/maximum_complexity
 
-def split_into_blocks(matrix):
+def split_into_blocks(matrix, complexity_dictionary):
     data = []
     print("Creating 8x8 Blocks for each bitplane")
     for k in range(7, -1, -1):
         for i in range(matrix.shape[0]//9):
             for j in range(matrix.shape[1]//9):
-                if(get_complexity(matrix[i*9:i*9+8,j*9:j*9+8,k]) > 0.45):
+                if(get_complexity(matrix[i*9:i*9+8,j*9:j*9+8,k]) > complexity_dictionary[k]):
                     data.append(matrix[i*9:i*9+9,j*9:j*9+9,k])               
     return data
 
@@ -65,10 +74,10 @@ def extract_meta_data(payload):
         meta_data = conjugate(meta_data)
         meta_data[8,8]=0
 
+    
     total_blocks = np.ravel(meta_data[:4,:])
     height = np.ravel(meta_data[4:6,:])
     width = np.ravel(meta_data[6:8,:])
-
 
     total_blocks = int("".join(str(elem) for elem in total_blocks), 2)
     height = int("".join(str(elem) for elem in height), 2)
@@ -94,13 +103,20 @@ def extract_payload(meta_data, payload):
     return secret_payload_arr           
 
 def main():
-    stego_arr = get_file("stego")
+
+    stego_name, mode = get_arguments()
+    stego_arr = get_file(stego_name)
 
     stego_bitplane_arr = np.zeros((stego_arr.shape[0], stego_arr.shape[1], 8))
     stego_bitplane_arr[:,:,0] = np.copy(stego_arr)
     stego_bitplane_arr = get_bitplane_arr(stego_bitplane_arr)
 
-    data = split_into_blocks(stego_bitplane_arr)
+    if mode == "improved":
+        complexities = {0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}
+    else:
+        complexities = {0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}
+
+    data = split_into_blocks(stego_bitplane_arr, complexities)
     meta_data = extract_meta_data(data)
 
 
