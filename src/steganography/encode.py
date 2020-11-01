@@ -24,6 +24,7 @@ def get_file(name):
     temp.close()
     return temp_arr
 
+
 def get_bitplane_arr(matrix):
     """
     Gets binary encoding of each pixel.
@@ -111,7 +112,16 @@ def find_and_replace(vessel, secret, payload, complexity_dictionary):
     else:
         return vessel
 
-                    
+def convert_from_gray_coding(matrix):
+    for (row, col), value in np.ndenumerate(matrix):
+        inv = 0
+        while(value):
+            inv = inv ^ value
+            value = value >> 1
+        value = inv
+        matrix[row,col] = value
+    return matrix
+
 def main():
 
     vessel_name, secret_name, mode = get_arguments()
@@ -119,8 +129,11 @@ def main():
     vessel_arr = get_file(vessel_name)
     secret_arr = get_file(secret_name)
 
+
     if mode == "improved":
         complexities = {0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}
+        vessel_arr = vessel_arr[:,:]^(vessel_arr[:,:] >> 1)
+        secret_arr = secret_arr[:,:]^(secret_arr[:,:] >> 1)
     else:
         complexities = {0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}
 
@@ -141,6 +154,10 @@ def main():
 
     stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data, complexities)
     stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
+
+
+    if mode == "improved":
+        stego_array = convert_from_gray_coding(stego_array)
 
     stego = Image.fromarray(stego_array, mode="L")
     stego.save("stego.bmp")

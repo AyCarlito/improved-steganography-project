@@ -79,11 +79,13 @@ def extract_meta_data(payload):
     height = np.ravel(meta_data[4:6,:])
     width = np.ravel(meta_data[6:8,:])
 
+
     total_blocks = int("".join(str(elem) for elem in total_blocks), 2)
     height = int("".join(str(elem) for elem in height), 2)
     width = int("".join(str(elem) for elem in width), 2)
 
     return (total_blocks, height, width)
+
 
 def extract_payload(meta_data, payload):
     secret_payload_arr = np.zeros(( meta_data[1], meta_data[2], 8), dtype="uint8")
@@ -102,10 +104,24 @@ def extract_payload(meta_data, payload):
                     blocks_retrieved+=1
     return secret_payload_arr           
 
+def convert_from_gray_coding(matrix):
+    for (row, col), value in np.ndenumerate(matrix):
+        inv = 0
+        while(value):
+            inv = inv ^ value
+            value = value >> 1
+        value = inv
+        matrix[row, col] = value
+    return matrix
+
 def main():
 
     stego_name, mode = get_arguments()
     stego_arr = get_file(stego_name)
+
+    if mode == "improved":
+        stego_arr = stego_arr[:,:]^(stego_arr[:,:] >> 1)
+
 
     stego_bitplane_arr = np.zeros((stego_arr.shape[0], stego_arr.shape[1], 8))
     stego_bitplane_arr[:,:,0] = np.copy(stego_arr)
@@ -122,6 +138,10 @@ def main():
 
     payload_arr = extract_payload(meta_data, data)
     secret_payload_arr = np.packbits(payload_arr[:,:]).reshape((meta_data[1], meta_data[2]))
+
+
+    if mode == "improved":
+        secret_payload_arr = convert_from_gray_coding(secret_payload_arr)
 
     extracted = Image.fromarray(secret_payload_arr)
     extracted.save("extracted.bmp")
