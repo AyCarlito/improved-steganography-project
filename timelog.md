@@ -52,3 +52,8 @@
 ### 19 Oct 2020
 
 * *2 Hours* Working encoding and decoding algorithms. Fixed previous day's issue by modifying complexity function. Also improved conugation function to make use of numpy indexing speed. 
+
+### 31 Oct 2020
+
+* *1 Hour* Added command line argparsing. Also added variable complexities (part of improved algorithm)
+* *0.5 Hour* Update meeting.md
