@@ -59,6 +59,12 @@ def split_into_blocks(matrix, complexity_dictionary):
                     data.append(matrix[i*9:i*9+9,j*9:j*9+9,k])               
     return data
 
+def create_complexity_dictionary(algorithm):
+    complexities = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, 
+                    "standard":{0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}}
+    return complexities[algorithm]
+
+
 def conjugate(matrix):
 
     checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
@@ -78,6 +84,7 @@ def extract_meta_data(payload):
     total_blocks = np.ravel(meta_data[:4,:])
     height = np.ravel(meta_data[4:6,:])
     width = np.ravel(meta_data[6:8,:])
+
 
 
     total_blocks = int("".join(str(elem) for elem in total_blocks), 2)
@@ -119,6 +126,7 @@ def main():
     stego_name, mode = get_arguments()
     stego_arr = get_file(stego_name)
 
+
     if mode == "improved":
         stego_arr = stego_arr[:,:]^(stego_arr[:,:] >> 1)
 
@@ -128,9 +136,13 @@ def main():
     stego_bitplane_arr = get_bitplane_arr(stego_bitplane_arr)
 
     if mode == "improved":
-        complexities = {0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}
+        complexities = create_complexity_dictionary("improved")
+    elif mode == "standard":
+        complexities = create_complexity_dictionary("standard")
     else:
-        complexities = {0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}
+        print("Invalid Algorithm Specified")
+        quit()
+
 
     data = split_into_blocks(stego_bitplane_arr, complexities)
     meta_data = extract_meta_data(data)
@@ -142,8 +154,9 @@ def main():
 
     if mode == "improved":
         secret_payload_arr = convert_from_gray_coding(secret_payload_arr)
-
-    extracted = Image.fromarray(secret_payload_arr)
+    
+    
+    extracted = Image.fromarray(secret_payload_arr, mode="L")
     extracted.save("extracted.bmp")
 
 main()
