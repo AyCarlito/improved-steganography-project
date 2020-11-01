@@ -24,6 +24,10 @@ def get_file(name):
     temp.close()
     return temp_arr
 
+def convert_to_gray_coding(matrix):
+    return matrix[:,:]^(matrix[:,:] >> 1)
+
+
 
 def get_bitplane_arr(matrix):
     """
@@ -45,7 +49,6 @@ def split_into_blocks(matrix):
             for j in range(matrix.shape[1]//8):
                 data.append(matrix[i*8:i*8+8,j*8:j*8+8,k])
     return data
-
 
 def get_complexity(matrix):
     current_complexity = 0
@@ -132,8 +135,8 @@ def main():
 
     if mode == "improved":
         complexities = {0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}
-        vessel_arr = vessel_arr[:,:]^(vessel_arr[:,:] >> 1)
-        secret_arr = secret_arr[:,:]^(secret_arr[:,:] >> 1)
+        vessel_arr = convert_to_gray_coding(vessel_arr)
+        secret_arr = convert_to_gray_coding(secret_arr)
     else:
         complexities = {0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}
 
