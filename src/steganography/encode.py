@@ -28,6 +28,10 @@ def convert_to_gray_coding(matrix):
     return matrix[:,:]^(matrix[:,:] >> 1)
 
 
+def create_complexity_dictionary(algorithm):
+    complexities = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, 
+                    "standard":{0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}}
+    return complexities[algorithm]
 
 def get_bitplane_arr(matrix):
     """
@@ -125,6 +129,7 @@ def convert_from_gray_coding(matrix):
         matrix[row,col] = value
     return matrix
 
+
 def main():
 
     vessel_name, secret_name, mode = get_arguments()
@@ -134,11 +139,11 @@ def main():
 
 
     if mode == "improved":
-        complexities = {0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}
+        complexities = create_complexity_dictionary("improved")
         vessel_arr = convert_to_gray_coding(vessel_arr)
         secret_arr = convert_to_gray_coding(secret_arr)
     else:
-        complexities = {0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}
+        complexities = create_complexity_dictionary("standard")
 
 
     print("Getting binary encoding of vessel")
