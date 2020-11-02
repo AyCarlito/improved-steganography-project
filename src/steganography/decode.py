@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import argparse
 
+
 def get_arguments():
     parser = argparse.ArgumentParser(description="BPCS Decoding tool")
     parser.add_argument("c", type=str, help="Cover Image")
@@ -18,7 +19,7 @@ def get_file(name):
     This function gets the vessel and secret object arrays. 
     """
     print("Opening %s" % name)
-    temp = Image.open("%s.bmp" % name)
+    temp = Image.open("%s.bmp" % name).convert("L")
     temp_arr = np.array(temp)
     temp.close()
     return temp_arr
@@ -66,7 +67,6 @@ def create_complexity_dictionary(algorithm):
 
 
 def conjugate(matrix):
-
     checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
     ones = np.ones((matrix.shape[0], matrix.shape[1]))
     conjugated = np.logical_xor(checkerboard, matrix).astype(int)
@@ -154,8 +154,7 @@ def main():
 
     if mode == "improved":
         secret_payload_arr = convert_from_gray_coding(secret_payload_arr)
-    
-    
+
     extracted = Image.fromarray(secret_payload_arr, mode="L")
     extracted.save("extracted.bmp")
 

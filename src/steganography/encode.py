@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import argparse
 
+
 def get_arguments():
     parser = argparse.ArgumentParser(description="BPCS Encoding tool")
     parser.add_argument("v", type=str, help="Vessel Image")
@@ -19,7 +20,7 @@ def get_file(name):
     This function gets the vessel and secret object arrays. 
     """
     print("Opening %s" % name)
-    temp = Image.open("%s.bmp" % name)
+    temp = Image.open("%s.bmp" % name).convert("L")
     temp_arr = np.array(temp)
     temp.close()
     return temp_arr
@@ -81,7 +82,6 @@ def get_metadata(matrix, payload):
     return meta_data
 
 def conjugate(matrix):
-
     checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
     ones = np.ones((matrix.shape[0], matrix.shape[1]))
     conjugated = np.logical_xor(checkerboard, matrix).astype(int)
@@ -137,14 +137,12 @@ def main():
     vessel_arr = get_file(vessel_name)
     secret_arr = get_file(secret_name)
 
-
     if mode == "improved":
         complexities = create_complexity_dictionary("improved")
         vessel_arr = convert_to_gray_coding(vessel_arr)
         secret_arr = convert_to_gray_coding(secret_arr)
     else:
         complexities = create_complexity_dictionary("standard")
-
 
     print("Getting binary encoding of vessel")
     vessel_bitplane_arr = np.zeros((vessel_arr.shape[0], vessel_arr.shape[1], 8))
@@ -166,7 +164,7 @@ def main():
 
     if mode == "improved":
         stego_array = convert_from_gray_coding(stego_array)
-
+        
     stego = Image.fromarray(stego_array, mode="L")
     stego.save("stego.bmp")
 
