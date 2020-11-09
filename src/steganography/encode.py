@@ -3,15 +3,39 @@ from PIL import Image
 import os
 import argparse
 
+def convert_to_gray_coding(matrix):
+    return matrix[:,:]^(matrix[:,:] >> 1)
+
+def convert_from_gray_coding(matrix):
+    for (row, col), value in np.ndenumerate(matrix):
+        inv = 0
+        while(value):
+            inv = inv ^ value
+            value = value >> 1
+        value = inv
+        matrix[row,col] = value
+    return matrix
+
+def create_complexity_dictionary(algorithm):
+    complexities = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, 
+                    "standard":{0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}}
+    return complexities[algorithm]
+
+def conjugate(matrix):
+    checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
+    ones = np.ones((matrix.shape[0], matrix.shape[1]))
+    conjugated = np.logical_xor(checkerboard, matrix).astype(int)
+    conjugated = np.logical_xor(conjugated,ones).astype(int)
+    return conjugated
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="BPCS Encoding tool")
     parser.add_argument("v", type=str, help="Vessel Image")
     parser.add_argument("s", type=str, help="Secret Image")
-    parser.add_argument("m", type=str, help="Algorithm. Standard or Improved")
+    parser.add_argument("a", choices=["standard", "improved"], type=str, help="Algorithm. Standard or Improved")
 
     args = parser.parse_args()
-    return args.v, args.s, args.m
+    return args
 
 def get_file(name):
     """
@@ -25,22 +49,17 @@ def get_file(name):
     temp.close()
     return temp_arr
 
-def convert_to_gray_coding(matrix):
-    return matrix[:,:]^(matrix[:,:] >> 1)
-
-
-def create_complexity_dictionary(algorithm):
-    complexities = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, 
-                    "standard":{0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}}
-    return complexities[algorithm]
 
 def get_bitplane_arr(matrix):
     """
     Gets binary encoding of each pixel.
     512x512x8 matrix. -> 512x512 pixels. 8 -> binary value of pixel.
     """
-    binary_encoding = np.unpackbits(np.uint8(matrix[:,:,0]))
-    binary_encoding = np.reshape(binary_encoding,(matrix.shape[0],matrix.shape[1],8))
+    temp_bitplane_arr = np.zeros((matrix.shape[0], matrix.shape[1], 8))
+    temp_bitplane_arr[:,:,0] = np.copy(matrix)
+
+    binary_encoding = np.unpackbits(np.uint8(temp_bitplane_arr[:,:,0]))
+    binary_encoding = np.reshape(binary_encoding,(temp_bitplane_arr.shape[0], temp_bitplane_arr.shape[1],8))
     return binary_encoding
     
 def split_into_blocks(matrix):
@@ -81,13 +100,6 @@ def get_metadata(matrix, payload):
     meta_data = np.concatenate((np.concatenate((total_blocks, height), axis=0), np.concatenate((width, remainder), axis=0)))
     return meta_data
 
-def conjugate(matrix):
-    checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
-    ones = np.ones((matrix.shape[0], matrix.shape[1]))
-    conjugated = np.logical_xor(checkerboard, matrix).astype(int)
-    conjugated = np.logical_xor(conjugated,ones).astype(int)
-    return conjugated
-
 
 def find_and_replace(vessel, secret, payload, complexity_dictionary):
     got_metadata = False
@@ -119,25 +131,16 @@ def find_and_replace(vessel, secret, payload, complexity_dictionary):
     else:
         return vessel
 
-def convert_from_gray_coding(matrix):
-    for (row, col), value in np.ndenumerate(matrix):
-        inv = 0
-        while(value):
-            inv = inv ^ value
-            value = value >> 1
-        value = inv
-        matrix[row,col] = value
-    return matrix
 
 
 def main():
 
-    vessel_name, secret_name, mode = get_arguments()
+    args = get_arguments()
     
-    vessel_arr = get_file(vessel_name)
-    secret_arr = get_file(secret_name)
+    vessel_arr = get_file(args.v)
+    secret_arr = get_file(args.s)
 
-    if mode == "improved":
+    if args.a == "improved":
         complexities = create_complexity_dictionary("improved")
         vessel_arr = convert_to_gray_coding(vessel_arr)
         secret_arr = convert_to_gray_coding(secret_arr)
@@ -145,29 +148,24 @@ def main():
         complexities = create_complexity_dictionary("standard")
 
     print("Getting binary encoding of vessel")
-    vessel_bitplane_arr = np.zeros((vessel_arr.shape[0], vessel_arr.shape[1], 8))
-    vessel_bitplane_arr[:,:,0] = np.copy(vessel_arr)
-    vessel_bitplane_arr = get_bitplane_arr(vessel_bitplane_arr)
-
+    vessel_bitplane_arr = get_bitplane_arr(vessel_arr)
     print("Getting binary encoding of secret")
-    secret_bitplane_arr = np.zeros((secret_arr.shape[0], secret_arr.shape[1], 8))
-    secret_bitplane_arr[:,:,0] = np.copy(secret_arr)
-    secret_bitplane_arr = get_bitplane_arr(secret_bitplane_arr)
+    secret_bitplane_arr = get_bitplane_arr(secret_arr)
+
 
     data = split_into_blocks(secret_bitplane_arr)
-    complexity = get_complexity(vessel_arr)
-    print("Complexity of vessel image: %f" % complexity)
 
     stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data, complexities)
     stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
 
 
-    if mode == "improved":
+    if args.a == "improved":
         stego_array = convert_from_gray_coding(stego_array)
         
     stego = Image.fromarray(stego_array, mode="L")
     stego.save("stego.bmp")
 
-main()
+if __name__ == "__main__":
+    main()
 
 
