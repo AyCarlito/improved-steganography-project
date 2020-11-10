@@ -97,7 +97,6 @@ def extract_meta_data(payload, stego_arr):
 
     if (height>stego_arr.shape[0]):
         raise MemoryError("Wrong algorithm used for decoding")
-        quit()
 
     return (total_blocks, height, width)
 
