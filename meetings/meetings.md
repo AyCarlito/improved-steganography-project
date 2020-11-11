@@ -33,6 +33,22 @@ Asked which visualisations should be produced.
 
 Should also implement an automated steganalysis tool to determine if image is stego object or not.
 
+## Fourth Meeting - 4 Nov 2020
+
+* Meeting Duration: 17:31-17:37
+
+### Discussion 
+
+Showed improved histogram -> A result of gray coding and variable complexities. 
+
+Asked about steganalysis cases and whether I was missing any. Cases are as follows:
+- Stego Object Only
+- Known cover and stego
+- Known message and stego
+- Known algorithm and stego
+- Known cover, algorithm and stego
+- Known message, algorithm and stego
+
 
 
 
