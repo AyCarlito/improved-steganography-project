@@ -49,6 +49,14 @@ Asked about steganalysis cases and whether I was missing any. Cases are as follo
 - Known cover, algorithm and stego
 - Known message, algorithm and stego
 
+## Fifth Meeting - 11 Nov 2020
+
+* Meeting Duration: 12:31-12:35
+
+### Discussion 
+
+Will finish automated tool by next week. Then will make a start on JPEG steganography
+
 
 
 
