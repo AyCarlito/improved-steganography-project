@@ -30,6 +30,10 @@ def plot(x, y, gtitle, xtitle, ytitle):
     )
     fig.show()
 
+def create_histogram(x):
+    fig = go.Figure(data=[go.Histogram(x=x, histnorm="probability")])
+    fig.show()
+
 def main():
 
     vessel_arr = encode.get_file("vessel")
@@ -52,28 +56,16 @@ def main():
     vessel_complexities = complexity(vessel_data)
     stego_complexities = complexity(stego_data)
 
-    unique, counts = np.unique(vessel_complexities, return_counts=True)
-    count_dict = dict(zip(unique, counts))
-    total = sum(count_dict.values())
-    vessel_probilities = []
+    fig = go.Figure(data=[go.Histogram(x=vessel_complexities, histnorm="probability")])
+    fig.show()
 
-    for key, value in count_dict.items():
-        vessel_probilities.append(get_probability(value, total))
-    
-    unique, counts = np.unique(stego_complexities, return_counts=True)
-    count_dict = dict(zip(unique, counts))
-    total = sum(count_dict.values())
-    stego_probilities = []
+    fig = go.Figure(data=[go.Histogram(x=stego_complexities, histnorm="probability")])
+    fig.show()
 
-    for key, value in count_dict.items():
-        stego_probilities.append(get_probability(value, total))
-    
-    plot(vessel_complexities, vessel_probilities, "Probability Histogram of Vessel Image", "Complexity", "Probability")
-    plot(stego_complexities, stego_probilities, "Probability Histogram of Stego Image", "Complexity", "Probability")
-   # plot(vessel_pixel_values, vessel_pixel_counts, "Pixel Value Histogram of Vessel Image", "Pixel values", " Occurences of Values")
+
+
     plot(np.arange(len(vessel_data)), vessel_complexities, "Complexity Histogram of Vessel Image", "8x8 Blocks", "Complexity of Block")
-
-   # plot(stego_pixel_values, stego_pixel_counts, "Pixel Value Histogram of Stego Image", "Pixel values", " Occurences of Values")
     plot(np.arange(len(stego_data)), stego_complexities, "Complexity Histogram of Stego Image", "8x8 Blocks", "Complexity of Block")
 
-main()
+if __name__ == "__main__":
+    main()
