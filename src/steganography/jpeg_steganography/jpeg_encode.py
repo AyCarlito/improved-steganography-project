@@ -1,4 +1,3 @@
-from PIL import Image
 from itertools import groupby
 import numpy as np
 import argparse
