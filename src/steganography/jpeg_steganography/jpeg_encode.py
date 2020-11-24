@@ -86,13 +86,30 @@ def construct_block(row, qtmatrix):
         block.extend([each_rle_as_list[0]]*each_rle_as_list[1])
     normalised = zigzag_encoding.inverse_zigzag_single(np.asarray(block))
     de_quantized = np.multiply(normalised, qtmatrix)
-    compressed_image_block = cv2.idct(np.float32(de_quantized))
+    compressed_image_block = cv2.idct(np.float32(de_quantized)).astype(int)
     return compressed_image_block
 
+def lsb_embed_secret(secret, compressed):
+    block_count = 0
+    for i in range(compressed.shape[0]//8):
+        for j in range(compressed.shape[1]//8):
+            if block_count<len(secret):
+                block = compressed[i*8:i*8+8, j*8:j*8+8]
+                binary_repr = np.unpackbits(secret[block_count])
+                for k in range(8):
+                    current_pixel = np.unpackbits(np.uint8(block[k,7]))
+                    current_pixel[7] = binary_repr[k]                
+                    block[k,7] = np.packbits(current_pixel)
+                compressed[i*8:i*8+8, j*8:j*8+8] = block
+                block_count+=1
+            else:
+                return compressed
+    return compressed
 
-def run_length_to_image():
+def run_length_to_image(secret):
     block_arr = []
     height_and_width_found = False
+    count = 0
     quantization_matrix = create_quantization_matrix()
     with open("image.csv", "r") as f:
         reader = csv.reader(f)
@@ -104,6 +121,7 @@ def run_length_to_image():
                 continue
             block = construct_block(row, quantization_matrix)
             block_arr.append(block)
+            
     compressed_arr = np.zeros((height,width))
     block_n = 0
     for i in range(height//8):
@@ -112,6 +130,11 @@ def run_length_to_image():
             block_n+=1
     return compressed_arr
     
+def split_secret(matrix):
+    secret_array = np.array(matrix)
+    secret_array = secret_array[0:64,0:64].flatten()
+    return secret_array
+
 def main():
 
     remove_rle_file()
@@ -119,13 +142,15 @@ def main():
     args = get_arguments()
     
     img = get_file(args.v)
-    
+    secret = get_file(args.s)
    
+    secret = split_secret(secret)
     quantization_matrix = create_quantization_matrix()
     compressed_arr = split_into_blocks(img, quantization_matrix)
-    compressed_arr = run_length_to_image()
+    compressed_arr = run_length_to_image(secret)
     
-    create_image(compressed_arr)
+    compressed_arr = lsb_embed_secret(secret, compressed_arr)
+    create_image(clean_values(compressed_arr))
     remove_rle_file()
     
 if __name__ == "__main__":
