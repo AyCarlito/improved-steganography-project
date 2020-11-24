@@ -1,10 +1,13 @@
 from PIL import Image
-from scipy.fftpack import dct, idct
+from itertools import groupby
 import numpy as np
 import argparse
 import zigzag_encoding
 import cv2
+import csv
 import math
+import os
+import ast
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="BPCS Encoding tool")
@@ -22,14 +25,21 @@ def get_file(name):
     img = cv2.imread(name, cv2.IMREAD_GRAYSCALE)
     return img
 
+def remove_rle_file():
+    try:
+        os.remove("image.csv")
+    except OSError:
+        pass
+    return
+
 def clean_values(matrix):
     matrix[matrix>255] = 255
     matrix[matrix<0] = 0
     return matrix
 
 def create_image(matrix):
-    compressed_image = Image.fromarray(matrix, mode="L")
-    compressed_image.save("compressed.bmp")
+    cv2.imwrite("compressed.bmp",np.uint8(matrix))
+    return
 
 def create_quantization_matrix():
     return(np.array([
@@ -43,8 +53,15 @@ def create_quantization_matrix():
         72,92,95,98,112,100,103,99
     ]).reshape(8,8))
 
+def image_size_to_csv(height, width):
+    with open("image.csv", "w") as f:
+        wr = csv.writer(f)
+        wr.writerow([height, width])
+    return
+
 def split_into_blocks(img, qtmatrix):
     compressed = np.zeros((img.shape[0], img.shape[1]))
+    image_size_to_csv(img.shape[0],img.shape[1])
     compressed[0:compressed.shape[0], 0:compressed.shape[1]] = img[0:img.shape[0],0:img.shape[1]]
     for i in range(compressed.shape[0]//8):
         for j in range(compressed.shape[1]//8):
@@ -52,53 +69,53 @@ def split_into_blocks(img, qtmatrix):
             discrete_cosine_transform = cv2.dct(block)     
             quantised_matrix = np.divide(discrete_cosine_transform, qtmatrix).astype(int)
             normalised = zigzag_encoding.zigzag_single(quantised_matrix) 
+            create_run_length_encoding(normalised)
             compressed[i*8:i*8+8,j*8:j*8+8] = quantised_matrix.reshape(8,8)
     return compressed
 
-def run_length_to_image(matrix, qtmatrix):
-    compressed_image = np.copy(matrix)
-    for i in range(matrix.shape[0]//8):
-        for j in range(matrix.shape[1]//8):
-            block = matrix[i*8:i*8+8,j*8:j*8+8]
-            normalised = zigzag_encoding.inverse_zigzag_single(block.flatten())
-            de_quantized = np.multiply(normalised, qtmatrix).astype(int)
-            compressed_image[i*8:i*8+8,j*8:j*8+8] = idct2(de_quantized)
-    return compressed_image
-    
-def rle_to_file(matrix):
-    flattened = matrix.flatten()
-    bitstream = create_run_length_encoding(flattened)
-    bitstream = str(matrix.shape[0]) + " " + str(matrix.shape[1]) + " " + bitstream + ";"
-    rle_file = open("image.txt","w")
-    rle_file.write(bitstream)
-    rle_file.close()
-    return 
+def create_run_length_encoding(block):
+    rle = [[i, len([*group])] for i, group in groupby(block)]
+    with open("image.csv", "a") as f:
+        wr = csv.writer(f)
+        wr.writerow(rle)
+    return
+
+def construct_block(row, qtmatrix):
+    block = []
+    for each_rle in row:
+        each_rle_as_list = ast.literal_eval(each_rle)
+        block.extend([each_rle_as_list[0]]*each_rle_as_list[1])
+    normalised = zigzag_encoding.inverse_zigzag_single(np.asarray(block))
+    de_quantized = np.multiply(normalised, qtmatrix)
+    compressed_image_block = cv2.idct(np.float32(de_quantized))
+    return compressed_image_block
 
 
-def rle_from_file():
-    with open("image.txt", "r") as f:
-        rle = f.read()
-    return rle
-
-
-def create_run_length_encoding(image):
-    i = 0
-    skip = 0
-    stream = []    
-    bitstream = ""
-    image = image.astype(int)
-    while i < image.shape[0]:
-        if image[i] != 0:            
-            stream.append((image[i],skip))
-            bitstream = bitstream + str(image[i])+ " " +str(skip)+ " "
-            skip = 0
-        else:
-            skip = skip + 1
-        i = i + 1
-
-    return bitstream
+def run_length_to_image():
+    block_arr = []
+    height_and_width_found = False
+    quantization_matrix = create_quantization_matrix()
+    with open("image.csv", "r") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if not height_and_width_found:
+                height = int(row[0])
+                width = int(row[1])
+                height_and_width_found = True
+                continue
+            block = construct_block(row, quantization_matrix)
+            block_arr.append(block)
+    compressed_arr = np.zeros((height,width))
+    block_n = 0
+    for i in range(height//8):
+        for j in range(width//8):
+            compressed_arr[i*8:i*8+8, j*8:j*8+8] = block_arr[block_n]
+            block_n+=1
+    return compressed_arr
     
 def main():
+
+    remove_rle_file()
 
     args = get_arguments()
     
@@ -107,16 +124,10 @@ def main():
    
     quantization_matrix = create_quantization_matrix()
     compressed_arr = split_into_blocks(img, quantization_matrix)
-
-    rle_to_file(compressed_arr)
-
+    compressed_arr = run_length_to_image()
+    
     create_image(compressed_arr)
+    remove_rle_file()
     
-
-
-
-    
-
-
 if __name__ == "__main__":
     main()
