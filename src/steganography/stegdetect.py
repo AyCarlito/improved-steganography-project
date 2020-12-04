@@ -28,10 +28,10 @@ def known_cover_and_stego(args):
     if (cover_arr==stego_arr).all():
         print("No hidden payload")
     else:
-        print("Hidden payload. Attempting recovery")
-        if(process_call(["python3", "decode.py", "stego", "standard"])) == 0: return
-        if(process_call(["python3", "decode.py", "stego", "improved"])) == 0: return
-        print("Failed recovery")
+        print("Hidden payload")
+       # if(process_call(["python3", "decode.py", "stego", "standard"])) == 0: return
+        #if(process_call(["python3", "decode.py", "stego", "improved"])) == 0: return
+        #print("Failed recovery")
     return
 
 def known_algorithm_and_stego(args):
@@ -59,10 +59,11 @@ def stego_only(args):
     stego_data = encode.split_into_blocks(stego_bitplane_arr)
     stego_complexities = steganalysis.complexity(stego_data)
     stego_complexities = [complexity for complexity in stego_complexities if(complexity >= 0.1)]
-    frequencies = Counter(stego_complexities).most_common(2)
-    print(frequencies[0][0])
-    print()
-    
+    frequencies = Counter(stego_complexities).most_common(2)    
+    if not (0.5<=frequencies[0][0] and frequencies[0][0]<=0.6):
+        print("Hidden Payload")
+    else:
+        print("No Hidden Payload")
     return
 
 
