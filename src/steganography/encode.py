@@ -3,7 +3,7 @@ from PIL import Image
 import os
 import argparse
 
-COMPLEXITIES = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, "standard":{0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}}
+COMPLEXITIES = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, "standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
 
 
 def convert_to_gray_coding(matrix):
@@ -18,11 +18,6 @@ def convert_from_gray_coding(matrix):
         value = inv
         matrix[row,col] = value
     return matrix
-
-def create_complexity_dictionary(algorithm):
-    complexities = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, 
-                    "standard":{0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}}
-    return complexities[algorithm]
 
 def conjugate(matrix):
     checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
@@ -63,6 +58,8 @@ def get_file(name):
     print("Opening %s" % name)
     temp = Image.open("%s" % name)
     if temp.mode == "L":
+        channels = get_grayscale_channel(temp.convert("L"))
+    elif temp.mode == "P":
         channels = get_grayscale_channel(temp.convert("L"))
     else:
         channels = get_colour_channels(temp.convert("RGB"))
@@ -156,9 +153,7 @@ def find_and_replace(vessel, secret, payload, complexity_dictionary):
 def embed_single_channel_in_single_channel(vessel_arr, secret_arr, complexities):
     vessel_bitplane_arr = get_bitplane_arr(vessel_arr)
     secret_bitplane_arr = get_bitplane_arr(secret_arr)
-
     data = split_into_blocks(secret_bitplane_arr)
-
     stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data, complexities)
     stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
     return stego_array
@@ -181,6 +176,7 @@ def main():
         stego_array = embed_single_channel_in_single_channel(vessel_arr[0], secret_arr[0], complexities)
         stego_array = convert_from_gray_coding(stego_array)
         create_image(stego_array, "L")
+
     elif len(vessel_arr)>1 and len(secret_arr)==1:
         embedded_channel = embed_single_channel_in_single_channel(vessel_arr[0], secret_arr[0], complexities)
         vessel_arr[0] = embedded_channel
@@ -188,6 +184,7 @@ def main():
         for i in range(3):
             stego_array[:,:,i] = convert_from_gray_coding(vessel_arr[i])
         create_image(stego_array.astype(np.uint8), "RGB")
+        
     else:
         stego_array = np.zeros((vessel_arr[0].shape[0], vessel_arr[0].shape[1], 3))
         for i in range(3):

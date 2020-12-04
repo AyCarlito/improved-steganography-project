@@ -3,6 +3,22 @@ from PIL import Image
 import os
 import argparse
 
+COMPLEXITIES = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, "standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
+
+#Gray Coding Functions Sourced from https://www.geeksforgeeks.org/decimal-equivalent-gray-code-inverse/# 
+
+def convert_to_gray_coding(matrix):
+    return matrix[:,:]^(matrix[:,:] >> 1)
+
+def convert_from_gray_coding(matrix):
+    for (row, col), value in np.ndenumerate(matrix):
+        inv = 0
+        while(value):
+            inv = inv ^ value
+            value = value >> 1
+        value = inv
+        matrix[row, col] = value
+    return matrix
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="BPCS Decoding tool")
@@ -13,6 +29,20 @@ def get_arguments():
     return args
 
 
+def get_grayscale_channel(image):
+    img_arr = np.array(image)
+    image.close()
+    return [img_arr]
+
+def get_colour_channels(image):
+    img_arr = np.array(image)
+    r = img_arr[:,:,0]
+    g = img_arr[:,:,1]
+    b = img_arr[:,:,2]
+    image.close()
+    return [r,g,b]
+   
+
 def get_file(name):
     """
     Takes a string parameter indicating file name.
@@ -20,10 +50,18 @@ def get_file(name):
     This function gets the vessel and secret object arrays. 
     """
     print("Opening %s" % name)
-    temp = Image.open("%s.bmp" % name).convert("L")
-    temp_arr = np.array(temp)
-    temp.close()
-    return temp_arr
+    temp = Image.open("%s" % name)
+    if temp.mode == "L":
+        channels = get_grayscale_channel(temp.convert("L"))
+    else:
+        channels = get_colour_channels(temp.convert("RGB"))
+    return channels
+
+def create_image(array, no_channels):
+    modes = {1: "L", 3: "RGB"}
+    extracted = Image.fromarray(array, mode=modes[no_channels])
+    extracted.save("extracted.bmp")
+
 
 def get_bitplane_arr(matrix):
     """
@@ -64,12 +102,6 @@ def split_into_blocks(matrix, complexity_dictionary):
                     data.append(matrix[i*9:i*9+9,j*9:j*9+9,k])               
     return data
 
-def create_complexity_dictionary(algorithm):
-    complexities = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, 
-                    "standard":{0:0.45, 1:0.45, 2:0.45, 3:0.45, 4:0.45, 5:0.45, 6:0.45, 7:0.45}}
-    return complexities[algorithm]
-
-
 def conjugate(matrix):
     checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
     ones = np.ones((matrix.shape[0], matrix.shape[1]))
@@ -88,8 +120,6 @@ def extract_meta_data(payload, stego_arr):
     total_blocks = np.ravel(meta_data[:4,:])
     height = np.ravel(meta_data[4:6,:])
     width = np.ravel(meta_data[6:8,:])
-
-
 
     total_blocks = int("".join(str(elem) for elem in total_blocks), 2)
     height = int("".join(str(elem) for elem in height), 2)
@@ -118,46 +148,41 @@ def extract_payload(meta_data, payload):
                     blocks_retrieved+=1
     return secret_payload_arr           
 
-
-def convert_to_gray_coding(matrix):
-    return matrix[:,:]^(matrix[:,:] >> 1)
-
-def convert_from_gray_coding(matrix):
-    for (row, col), value in np.ndenumerate(matrix):
-        inv = 0
-        while(value):
-            inv = inv ^ value
-            value = value >> 1
-        value = inv
-        matrix[row, col] = value
-    return matrix
+def extract_single_channel_from_single_channel(channel, complexities):
+    stego_bitplane_arr = get_bitplane_arr(channel)
+    data = split_into_blocks(stego_bitplane_arr, complexities)
+    try:
+        meta_data = extract_meta_data(data, channel)
+    except MemoryError as e:
+        return (np.zeros((channel.shape[0], channel.shape[1])))
+    payload_arr = extract_payload(meta_data, data)
+    secret_payload_arr = np.packbits(payload_arr[:,:]).reshape((meta_data[1], meta_data[2]))
+    return secret_payload_arr
 
 def main():
 
     args = get_arguments()
+    
     stego_arr = get_file(args.s)
+    stego_arr = [convert_to_gray_coding(channel) for channel in stego_arr]
+    complexities = COMPLEXITIES[args.a]
 
-
-    if args.a == "improved":
-        stego_arr = convert_to_gray_coding(stego_arr)
-        complexities = create_complexity_dictionary("improved")
+    if len(stego_arr)==1:
+        secret_payload_arr = convert_from_gray_coding(extract_single_channel_from_single_channel(stego_arr[0], complexities))
+        create_image(secret_payload_arr, 1)
     else:
-        complexities = create_complexity_dictionary("standard")
-
-    stego_bitplane_arr = get_bitplane_arr(stego_arr)
-
-    data = split_into_blocks(stego_bitplane_arr, complexities)
-    meta_data = extract_meta_data(data, stego_arr)
-
-    payload_arr = extract_payload(meta_data, data)
-    secret_payload_arr = np.packbits(payload_arr[:,:]).reshape((meta_data[1], meta_data[2]))
-
-
-    if args.a == "improved":
-        secret_payload_arr = convert_from_gray_coding(secret_payload_arr)
-
-    extracted = Image.fromarray(secret_payload_arr, mode="L")
-    extracted.save("extracted.bmp")
+        secret_channels = []
+        for i in range(3):
+            secret_payload_arr = convert_from_gray_coding(extract_single_channel_from_single_channel(stego_arr[i], complexities))
+            if(np.any(secret_payload_arr)):
+                secret_channels.append(secret_payload_arr)
+        extracted_array = np.zeros((secret_channels[0].shape[0], secret_channels[0].shape[1], len(secret_channels)))
+        for i, channel in enumerate(secret_channels):
+            extracted_array[:,:,i] = channel
+        if len(secret_channels) == 1:
+            create_image(extracted_array[:,:,0].astype(np.uint8), 1)
+        else:
+            create_image(extracted_array.astype(np.uint8), 3)
 
 if __name__ == "__main__":
     main()
