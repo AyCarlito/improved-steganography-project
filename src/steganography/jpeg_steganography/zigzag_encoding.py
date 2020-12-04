@@ -1,3 +1,4 @@
+# Code Sourced from https://github.com/lot9s/lfv-compression/blob/master/scripts/our_mpeg/zigzag.py
 import numpy as np
 
 ZIGZAGINVERSE = np.array([[0,  1,  5,  6,  14, 15, 27, 28],
