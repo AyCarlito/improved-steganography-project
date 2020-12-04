@@ -146,6 +146,7 @@ def find_and_replace(vessel, secret, payload, complexity_dictionary):
                                 vessel[i*9+8, j*9+8, k] = 1    
     if len(payload)>0:
         print("Not enough complex regions")
+        quit()
         return vessel
     else:
         return vessel
