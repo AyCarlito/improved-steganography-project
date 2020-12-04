@@ -58,7 +58,31 @@ Asked about steganalysis cases and whether I was missing any. Cases are as follo
 Will finish automated tool by next week. Then will make a start on JPEG steganography
 
 
+## Sixth Meething - 18 Nov 2020
 
+* Meeting Duration: 12:30-12:38
+
+### Discussion
+
+Started looking at JPEG steganography but struggling to implement JPEG compression.
+
+Reviewed the steps involved in compression:
+- Split into blocks
+- Discrete Cosine Transform on each block
+- Normalise with Quantisation Matrix
+- Do ZigZag Encoding
+
+Discussed run length encoding -> clarified that every two number in RLE file are a pair. 
+
+## Seventh Meeting - 25 Nov 2020
+
+* Meeting Duration: 12:30-12:38
+
+### Discussion
+
+JPEG compression is now working. Issue was with Discrete Cosine Transform and Inverse Cosine Transform. Switched libraries and fixed problem -> Pillow and SciPy to open-cv
+
+Agreed to have next meeting in 3 weeks time -> Don't expect to get much work done, as coursework due in next week and exam the week after.
 
 
 

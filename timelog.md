@@ -140,3 +140,45 @@
 * *0.5 Hour* Writeup of meeting
 * *3 Hour* Updating timelog
 
+### 17 Nov 2020
+
+* *2 Hours* Background reading on JPEG compression and steganography methods
+* *0.5 Hour* Created argparsing and filereasing for JPEG encoder
+* *0.5 Hour* Created function to generate quantisation matrix
+* *1 Hour* Wrote function to perform discrete cosine transform on a block. SciPy method of doing this only worked for 1D array. 
+* *1 Hour* Hardcoded the zigzag indices. This is for reordering the qauntized matrix
+* *0.5 Hour* Created function to normalise each quantisation matrix using zigzag encoding. This normalised block is then added back to the original matrix.
+* *2 Hours* Couldn't produce image properly. Initially though it could be the dct and idct causing problem, however using cv2 instead of scipy the problem persisted. Believe the problem is zigzag
+
+
+## Week 9
+
+### 23 Nov 2020
+
+* *1 Hour* Sourced existing zigzag encoding functions from another compression algorithm. Source is noted in the file.
+* *1 Hour*  Created seperate functions for discrete and inserse cosine transformations
+* *3 Hours* Functions to create run length encoding and output to file. 
+* *0.5 Hour* Moved JPEG algorithm files to seperate directory.
+
+### 24 Nov 2020
+
+* *3 Hours* Again tried to fix the problem of being unable to recover the image properly. Switched to open-cv python - this provided a DCT and IDCT that generalised to any shape of matrix. These functions would only work by providing it with an open-cv image.
+* *0.5 Hour* Switched from Pillow to open-cv python for reading in image.
+* *0.5 Hour* Unable to use DCT or IDCT on each block. Had to convert each block to type np.float32
+* *0.5 Hour* Function write width and height of image to csv file
+* *1 Hour* Redid run length encoding function
+* *1 Hour* Redid function to write run length encoding to csv
+* *1 Hour* Implemented function to create compressed image from run length encoding
+* *3 Hours* Started steganography aspect of JPEG images. Implemented modified LSB steganography. 1 pixel of secret is embedded in the LSB's of the last column in an 8x8 vessel block. 
+* *0.5 Hours* Evaluate LSB. Low capacity and large image degradation.
+
+### 25 Nov 2020
+
+* *0.5 Hours* Supervisor Meeting
+
+## Week 10
+
+### 3 Dec 2020
+
+* *1.5 Hours* Update timelog.md
+* *0.5 Hours Writeup of supervisor meeting
