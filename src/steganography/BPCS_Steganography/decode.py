@@ -2,8 +2,10 @@ import numpy as np
 from PIL import Image
 import os
 import argparse
+import random
 
-COMPLEXITIES = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, "standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
+# "standard":{0:0.4, 1:0.7, 2:0.5, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
+COMPLEXITIES = {"improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}, "standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
 
 #Gray Coding Functions Sourced from https://www.geeksforgeeks.org/decimal-equivalent-gray-code-inverse/# 
 
@@ -95,11 +97,13 @@ def get_complexity(matrix):
 def split_into_blocks(matrix, complexity_dictionary):
     data = []
     print("Creating 8x8 Blocks for each bitplane")
-    for k in range(7, -1, -1):
+    bitplanes = [0,1,2,3,4,5,6,7]
+    random.Random(matrix.shape[0]).shuffle(bitplanes)
+    for k in bitplanes:
         for i in range(matrix.shape[0]//9):
             for j in range(matrix.shape[1]//9):
                 if(get_complexity(matrix[i*9:i*9+8,j*9:j*9+8,k]) > complexity_dictionary[k]):
-                    data.append(matrix[i*9:i*9+9,j*9:j*9+9,k])               
+                    data.append(matrix[i*9:i*9+9,j*9:j*9+9,k])              
     return data
 
 def conjugate(matrix):
@@ -131,11 +135,12 @@ def extract_meta_data(payload, stego_arr):
     return (total_blocks, height, width)
 
 
-def extract_payload(meta_data, payload):
+def extract_payload(meta_data, payload, stego_height):
     secret_payload_arr = np.zeros(( meta_data[1], meta_data[2], 8), dtype="uint8")
     blocks_retrieved = 0
-
-    for k in range(7, -1, -1):
+    bitplanes = [0,1,2,3,4,5,6,7]
+    random.Random(stego_height).shuffle(bitplanes)
+    for k in bitplanes:
         for i in range(secret_payload_arr.shape[0]//8):
             for j in range(secret_payload_arr.shape[1]//8):
                 if (blocks_retrieved < meta_data[0]):
@@ -155,7 +160,8 @@ def extract_single_channel_from_single_channel(channel, complexities):
         meta_data = extract_meta_data(data, channel)
     except MemoryError as e:
         return (np.zeros((channel.shape[0], channel.shape[1])))
-    payload_arr = extract_payload(meta_data, data)
+    stego_height = channel.shape[0]
+    payload_arr = extract_payload(meta_data, data, stego_height)
     secret_payload_arr = np.packbits(payload_arr[:,:]).reshape((meta_data[1], meta_data[2]))
     return secret_payload_arr
 
@@ -169,7 +175,8 @@ def main():
 
     if len(stego_arr)==1:
         secret_payload_arr = convert_from_gray_coding(extract_single_channel_from_single_channel(stego_arr[0], complexities))
-        create_image(secret_payload_arr, 1)
+        create_image(secret_payload_arr.astype(np.uint8), 1)
+
     else:
         secret_channels = []
         for i in range(3):

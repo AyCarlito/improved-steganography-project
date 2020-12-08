@@ -2,9 +2,11 @@ import numpy as np
 from PIL import Image
 import os
 import argparse
+import random
 
-COMPLEXITIES = {"improved":{0:0, 1:0, 2:0.4, 3:0.425, 4:0.45, 5:0.475, 6:0.5, 7:0.525}, "standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
+COMPLEXITIES = {"improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}, "standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
 
+#Gray Coding Functions Sourced from https://www.geeksforgeeks.org/decimal-equivalent-gray-code-inverse/# 
 
 def convert_to_gray_coding(matrix):
     return matrix[:,:]^(matrix[:,:] >> 1)
@@ -81,13 +83,15 @@ def get_bitplane_arr(matrix):
     binary_encoding = np.reshape(binary_encoding,(temp_bitplane_arr.shape[0], temp_bitplane_arr.shape[1],8))
     return binary_encoding
     
-def split_into_blocks(matrix):
+def split_into_blocks(matrix, vessel_height):
     """
     Creates 8x8 blocks of pixels for each bitplane in the secret object
     """
     data = []
     print("Creating 8x8 Blocks for each bitplane")
-    for k in range(7, -1, -1):
+    bitplanes = [0,1,2,3,4,5,6,7]
+    random.Random(vessel_height).shuffle(bitplanes)
+    for k in bitplanes:
         for i in range(matrix.shape[0]//8):
             for j in range(matrix.shape[1]//8):
                 data.append(matrix[i*8:i*8+8,j*8:j*8+8,k])
@@ -122,7 +126,9 @@ def get_metadata(matrix, payload):
 
 def find_and_replace(vessel, secret, payload, complexity_dictionary):
     got_metadata = False
-    for k in range(7, -1, -1):
+    bitplanes = [0,1,2,3,4,5,6,7]
+    random.Random(vessel.shape[0]).shuffle(bitplanes)
+    for k in bitplanes:
         for i in range(vessel.shape[0]//9):
             for j in range(vessel.shape[1]//9):
                 if(len(payload)>0):
@@ -143,22 +149,20 @@ def find_and_replace(vessel, secret, payload, complexity_dictionary):
                                 got_metadata = True
                             else:
                                 vessel[i*9:i*9+8,j*9:j*9+8,k] = conjugate(vessel[i*9:i*9+8,j*9:j*9+8,k])
-                                vessel[i*9+8, j*9+8, k] = 1    
+                                vessel[i*9+8, j*9+8, k] = 1   
+                else:
+                    return vessel
     if len(payload)>0:
         print("Not enough complex regions")
         quit()
-        return vessel
-    else:
-        return vessel
 
 def embed_single_channel_in_single_channel(vessel_arr, secret_arr, complexities):
     vessel_bitplane_arr = get_bitplane_arr(vessel_arr)
     secret_bitplane_arr = get_bitplane_arr(secret_arr)
-    data = split_into_blocks(secret_bitplane_arr)
+    data = split_into_blocks(secret_bitplane_arr, vessel_arr.shape[0])
     stego_array = find_and_replace(vessel_bitplane_arr,secret_bitplane_arr,data, complexities)
     stego_array=np.packbits(stego_array[:,:]).reshape((vessel_bitplane_arr.shape[0], vessel_bitplane_arr.shape[1]))
     return stego_array
-
 
 
 def main():
@@ -168,11 +172,12 @@ def main():
     vessel_arr = get_file(args.v)
     secret_arr = get_file(args.s)
  
+    
+    
     vessel_arr = [convert_to_gray_coding(channel) for channel in vessel_arr]
     secret_arr = [convert_to_gray_coding(channel) for channel in secret_arr]
 
     complexities = COMPLEXITIES[args.a]
-
     if len(vessel_arr)==1 and len(secret_arr)==1:
         stego_array = embed_single_channel_in_single_channel(vessel_arr[0], secret_arr[0], complexities)
         stego_array = convert_from_gray_coding(stego_array)
