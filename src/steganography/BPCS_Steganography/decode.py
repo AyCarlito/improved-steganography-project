@@ -4,9 +4,10 @@ import os
 import argparse
 import random
 
-# "standard":{0:0.4, 1:0.7, 2:0.5, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
-COMPLEXITIES = {"improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}, "standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}}
 
+COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}}
+
+bitplanes = [7,6,5,4,3,2,1,0]
 #Gray Coding Functions Sourced from https://www.geeksforgeeks.org/decimal-equivalent-gray-code-inverse/# 
 
 def convert_to_gray_coding(matrix):
@@ -97,8 +98,6 @@ def get_complexity(matrix):
 def split_into_blocks(matrix, complexity_dictionary):
     data = []
     print("Creating 8x8 Blocks for each bitplane")
-    bitplanes = [0,1,2,3,4,5,6,7]
-    random.Random(matrix.shape[0]).shuffle(bitplanes)
     for k in bitplanes:
         for i in range(matrix.shape[0]//9):
             for j in range(matrix.shape[1]//9):
@@ -135,11 +134,9 @@ def extract_meta_data(payload, stego_arr):
     return (total_blocks, height, width)
 
 
-def extract_payload(meta_data, payload, stego_height):
+def extract_payload(meta_data, payload):
     secret_payload_arr = np.zeros(( meta_data[1], meta_data[2], 8), dtype="uint8")
     blocks_retrieved = 0
-    bitplanes = [0,1,2,3,4,5,6,7]
-    random.Random(stego_height).shuffle(bitplanes)
     for k in bitplanes:
         for i in range(secret_payload_arr.shape[0]//8):
             for j in range(secret_payload_arr.shape[1]//8):
@@ -161,7 +158,7 @@ def extract_single_channel_from_single_channel(channel, complexities):
     except MemoryError as e:
         return (np.zeros((channel.shape[0], channel.shape[1])))
     stego_height = channel.shape[0]
-    payload_arr = extract_payload(meta_data, data, stego_height)
+    payload_arr = extract_payload(meta_data, data)
     secret_payload_arr = np.packbits(payload_arr[:,:]).reshape((meta_data[1], meta_data[2]))
     return secret_payload_arr
 
@@ -172,6 +169,8 @@ def main():
     stego_arr = get_file(args.s)
     stego_arr = [convert_to_gray_coding(channel) for channel in stego_arr]
     complexities = COMPLEXITIES[args.a]
+    # if args.a == "improved":
+    #     random.Random(stego_arr[0].shape[0]).shuffle(bitplanes)
 
     if len(stego_arr)==1:
         secret_payload_arr = convert_from_gray_coding(extract_single_channel_from_single_channel(stego_arr[0], complexities))
