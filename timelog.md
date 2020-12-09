@@ -182,3 +182,23 @@
 
 * *1.5 Hours* Update timelog.md
 * *0.5 Hours Writeup of supervisor meeting
+
+### 4 Dec 2020
+
+* *0.5 Hour* Added sources for zigzag encoding and canonical gray coding.
+* *0.5 Hour* Review of standard BPCS Algorithm
+* *0.5 Hour* Moved Gray coding to standard algorithm
+* *3 Hours* Updated standard algorithm to work for 24-bit colour images. Can now embed grayscale in grayscale, grayscale in colour and colour in colour. 
+* *0.5 Hours* Fixed issue where some grayscale images caused program to crash. Fixed by adding case where image mode is "P" and converting to "L"
+* *0.5 Hours* Restructured Directories. Seperate folders for JPEG, BPSC algorithms and Automated Tool. 
+
+
+### 8 Dec 2020
+
+* *0.5 Hour* Review of Improved BPCS Algorithm
+* *1 Hour* 1st Improvement - Different complexity threshold for each bit plane. - Can't have threshold higher than 0.5 or will be unable to recover image
+* *1 Hour* 2nd Improvement - Random selection of ordering of bit planes when embedding. Standard algorithm embedds from LSB to MSB, now does so randomly. Provided seed is height of vessel image to ensure random ordering is the same. 
+* *0.5 Hour* Modified 2nd improvement to reduce code required. 
+
+
+
