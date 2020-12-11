@@ -205,7 +205,7 @@
 
 * *0.5 Hour* Review of JPEG Algorithm
 * *0.5 Hour* Check shape of image read in. (IMG_UNCHANGED) parameter stops cv2 from converting image to 3 channels. Grayscale image will be 2 dimensional, RGB 3 dimensional.
-* *0.5 Hour* Creating separate quantixaiton matrices for luminance and chrominance. 
+* *0.5 Hour* Creating separate quantizaiton matrices for luminance and chrominance. 
 * *0.5 Hour* Function to handle an individual channel. Takes a quantization matrix and channel and calls functions to split into blocks and create RLE
 * *0.5 Hour* JPEG Compression now working for colour and grayscale, but compressed image will have green border around outside if image dimensions not divisable by 8.
 * *0.5 Hour* Tried using cv2.copyMakeBorder function to correct problem. Did not work
