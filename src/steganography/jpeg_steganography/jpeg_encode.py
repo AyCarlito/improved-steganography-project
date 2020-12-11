@@ -40,6 +40,15 @@ def get_arguments():
     args = parser.parse_args()
     return args
 
+def pad_image(img, height, width, dims):
+    if dims == 1:
+        padded = np.zeros((height, width))
+        padded[0:img.shape[0], 0:img.shape[1]] = img[0:img.shape[0], 0:img.shape[1]]
+    else:
+        padded = np.zeros((height, width, dims))
+        for i in range(dims):
+            padded[0:img.shape[0], 0:img.shape[1], i] = img[0:img.shape[0], 0:img.shape[1], i]
+    return padded
 
 def get_file(name):
     """
@@ -49,11 +58,13 @@ def get_file(name):
     """
     img = cv2.imread(name, cv2.IMREAD_UNCHANGED)
     if len(img.shape) == 2:
-        img = cv2.imread(name, cv2.IMREAD_GRAYSCALE)
+        matrix = cv2.imread(name, cv2.IMREAD_GRAYSCALE)
+        image = cv2.resize(matrix, (8*(math.ceil(matrix.shape[1]/8)), 8*(math.ceil(matrix.shape[0]/8))))
     else:
         BGR = cv2.imread(name)
-        img = cv2.cvtColor(BGR, cv2.COLOR_BGR2YCrCb)
-    return img
+        matrix = cv2.cvtColor(BGR, cv2.COLOR_BGR2YCrCb)
+        image = cv2.resize(matrix, (8*(math.ceil(matrix.shape[1]/8)), 8*(math.ceil(matrix.shape[0]/8))))
+    return image
 
 def remove_rle_file():
     try:
@@ -170,6 +181,7 @@ def main():
     chrominance_quantization_matrix = create_chrominance_quantization_matrix()
 
     img = get_file(args.v)
+
     if len(img.shape) == 2:
         create_image(clean_values(handle_channel(img, luminance_quantization_matrix)))
     else:
@@ -181,6 +193,10 @@ def main():
         remove_rle_file()
         
     
+
+    # compressed_arr = cv2.cvtColor(img, cv2.COLOR_YCrCb2BGR)
+    # padded = np.uint8(pad_image(compressed_arr, 8*(math.ceil(img.shape[0]/8)), 8*(math.ceil(img.shape[1]/8)), 3))
+    # create_image(clean_values(padded))
 
     # secret = get_file(args.s)
    
