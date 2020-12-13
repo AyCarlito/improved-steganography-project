@@ -8,47 +8,40 @@ import math
 import os
 import ast
 
-def create_luminance_quantization_matrix():
-    return(np.array([
-        16,11,10,16,24,40,51,61,
-        12,12,14,19,26,58,60,55,
-        14,13,16,24,40,57,69,56,
-        14,17,22,29,51,87,80,62,
-        18,22,37,56,68,109,103,77,
-        24,35,55,64,81,104,113,92,
-        49,64,78,87,103,121,120,101,
-        72,92,95,98,112,100,103,99
-    ]).reshape(8,8))
+LUMINANCE_MATRIX = np.array([
+    [16,11,10,16,24,40,51,61],
+    [12,12,14,19,26,58,60,55],
+    [14,13,16,24,40,57,69,56],
+    [14,17,22,29,51,87,80,62],
+    [18,22,37,56,68,109,103,77],
+    [24,35,55,64,81,104,113,92],
+    [49,64,78,87,103,121,120,101],
+    [72,92,95,98,112,100,103,99]
+])
 
-def create_chrominance_quantization_matrix():
-    return(np.array([
-        17,18,24,47,99,99,99,99,
-        18,21,26,66,99,99,99,99,
-        24,26,56,99,99,99,99,99,
-        47,66,99,99,99,99,99,99,
-        99,99,99,99,99,99,99,99,
-        99,99,99,99,99,99,99,99,
-        99,99,99,99,99,99,99,99,
-        99,99,99,99,99,99,99,99
-    ]).reshape(8,8))
-
+CHROMINANCE_MATRIX = np.array([
+    [17,18,24,47,99,99,99,99],
+    [18,21,26,66,99,99,99,99],
+    [24,26,56,99,99,99,99,99],
+    [47,66,99,99,99,99,99,99],
+    [99,99,99,99,99,99,99,99],
+    [99,99,99,99,99,99,99,99],
+    [99,99,99,99,99,99,99,99],
+    [99,99,99,99,99,99,99,99]
+])
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="BPCS Encoding tool")
     parser.add_argument("v", type=str, help="Vessel Image")
-    #parser.add_argument("s", type=str, help="Secret Image")
+    parser.add_argument("s", type=str, help="Secret Image")
     args = parser.parse_args()
     return args
 
-def pad_image(img, height, width, dims):
-    if dims == 1:
-        padded = np.zeros((height, width))
-        padded[0:img.shape[0], 0:img.shape[1]] = img[0:img.shape[0], 0:img.shape[1]]
-    else:
-        padded = np.zeros((height, width, dims))
-        for i in range(dims):
-            padded[0:img.shape[0], 0:img.shape[1], i] = img[0:img.shape[0], 0:img.shape[1], i]
-    return padded
+def remove_rle_file():
+    try:
+        os.remove("image.csv")
+    except OSError:
+        pass
 
 def get_file(name):
     """
@@ -66,45 +59,15 @@ def get_file(name):
         image = cv2.resize(matrix, (8*(math.ceil(matrix.shape[1]/8)), 8*(math.ceil(matrix.shape[0]/8))))
     return image
 
-def remove_rle_file():
-    try:
-        os.remove("image.csv")
-    except OSError:
-        pass
-    return
+def create_image(matrix, name):
+    cv2.imwrite("%s.jpeg" % name, matrix)
+
 
 def clean_values(matrix):
-    matrix[matrix>255] = 255
+    matrix[matrix>256] = 256
     matrix[matrix<0] = 0
     return matrix
 
-def create_image(matrix):
-    cv2.imwrite("compressed.jpeg", matrix)
-    return
-
-def lsb_embed_secret(secret, compressed):
-    block_count = 0
-    for i in range(compressed.shape[0]//8):
-        for j in range(compressed.shape[1]//8):
-            if block_count<len(secret):
-                block = compressed[i*8:i*8+8, j*8:j*8+8]
-                binary_repr = np.unpackbits(secret[block_count])
-                for k in range(8):
-                    current_pixel = np.unpackbits(np.uint8(block[k,7]))
-                    current_pixel[7] = binary_repr[k]                
-                    block[k,7] = np.packbits(current_pixel)
-                compressed[i*8:i*8+8, j*8:j*8+8] = block
-                block_count+=1
-            else:
-                return compressed
-    return compressed
-
-
-def image_size_to_csv(height, width):
-    with open("image.csv", "w") as f:
-        wr = csv.writer(f)
-        wr.writerow([height, width])
-    return
 
 def split_into_blocks(img, qtmatrix):
     compressed = np.zeros((img.shape[0], img.shape[1]))
@@ -112,7 +75,7 @@ def split_into_blocks(img, qtmatrix):
     compressed[0:compressed.shape[0], 0:compressed.shape[1]] = img[0:img.shape[0],0:img.shape[1]]
     for i in range(compressed.shape[0]//8):
         for j in range(compressed.shape[1]//8):
-            block = compressed[i*8:i*8+8,j*8:j*8+8]
+            block = compressed[i*8:i*8+8,j*8:j*8+8]        
             discrete_cosine_transform = cv2.dct(block)     
             quantised_matrix = np.divide(discrete_cosine_transform, qtmatrix).astype(int)
             normalised = zigzag_encoding.zigzag_single(quantised_matrix) 
@@ -120,22 +83,16 @@ def split_into_blocks(img, qtmatrix):
             compressed[i*8:i*8+8,j*8:j*8+8] = quantised_matrix.reshape(8,8)
     return compressed
 
+def image_size_to_csv(height, width):
+    with open("image.csv", "w") as f:
+        wr = csv.writer(f)
+        wr.writerow([height, width])
+
 def create_run_length_encoding(block):
     rle = [[i, len([*group])] for i, group in groupby(block)]
     with open("image.csv", "a") as f:
         wr = csv.writer(f)
         wr.writerow(rle)
-    return
-
-def construct_block(row, qtmatrix):
-    block = []
-    for each_rle in row:
-        each_rle_as_list = ast.literal_eval(each_rle)
-        block.extend([each_rle_as_list[0]]*each_rle_as_list[1])
-    normalised = zigzag_encoding.inverse_zigzag_single(np.asarray(block))
-    de_quantized = np.multiply(normalised, qtmatrix)
-    compressed_image_block = cv2.idct(np.float32(de_quantized)).astype(int)
-    return compressed_image_block
 
 def run_length_to_image(qtmatrix):
     block_arr = []
@@ -159,11 +116,66 @@ def run_length_to_image(qtmatrix):
             compressed_arr[i*8:i*8+8, j*8:j*8+8] = block_arr[block_n]
             block_n+=1
     return compressed_arr
-    
+
+def construct_block(row, qtmatrix):
+    block = []
+    for each_rle in row:
+        each_rle_as_list = ast.literal_eval(each_rle)
+        block.extend([each_rle_as_list[0]]*each_rle_as_list[1])
+    normalised = zigzag_encoding.inverse_zigzag_single(np.asarray(block))
+    de_quantized = np.multiply(normalised, qtmatrix)
+    compressed_image_block = cv2.idct(np.float32(de_quantized)).astype(int)
+    return compressed_image_block
+
+def create_blocks(matrix):
+    data = []
+    for i in range(matrix.shape[0]//8):
+        for j in range(matrix.shape[1]//8):
+            data.append(matrix[i*8:i*8+8,j*8:j*8+8])
+    return data
+
+
+def lsb_embed_secret(secret, compressed):
+    block_count = 0
+    for i in range(compressed.shape[0]//8):
+        for j in range(compressed.shape[1]//8):
+            if block_count<=len(secret):
+                block = compressed[i*8:i*8+8, j*8:j*8+8]
+                block_count+=1
+                for row in range(8):
+                    secret_to_embed = np.unpackbits(secret[0])
+                    secret.pop(0)
+                    for column in range(8):
+                        binary_repr = np.unpackbits(block[row,column])
+                        binary_repr[-1] = secret_to_embed[column]
+                        block[row, column] = np.packbits(binary_repr)
+                compressed[i*8:i*8+8, j*8:j*8+8] = block       
+            else:
+                
+                return compressed
+    return compressed
+
+def lsb_decode_secret():
+    img = get_file("compressed.jpeg")
+    data = create_blocks(img)
+    secret = []
+    retrieved = 0
+    for block in data:
+        secret_pixel = []
+        if retrieved<14568:
+            for row in range(8):
+                for column in range(8):
+                    pixel = np.unpackbits(block[row,column])
+                    secret_pixel.append(pixel[-1])
+                secret.extend(np.packbits(secret_pixel))
+                retrieved+=1
+    return secret
+
 def split_secret(matrix):
     secret_array = np.array(matrix)
-    secret_array = secret_array[0:64,0:64].flatten()
+    secret_array = list(secret_array[0:12,0:12].flatten())
     return secret_array
+
 
 def handle_channel(img, quantization_matrix):
     split_into_blocks(img, quantization_matrix)
@@ -176,37 +188,27 @@ def main():
     remove_rle_file()
 
     args = get_arguments()
-    
-    luminance_quantization_matrix = create_luminance_quantization_matrix()
-    chrominance_quantization_matrix = create_chrominance_quantization_matrix()
 
     img = get_file(args.v)
+    secret = get_file(args.s)
+
+    secret = split_secret(secret)
 
     if len(img.shape) == 2:
-        create_image(clean_values(handle_channel(img, luminance_quantization_matrix)))
+        compressed_arr = clean_values(handle_channel(img, LUMINANCE_MATRIX))
+        compressed_arr = lsb_embed_secret(secret, np.uint8(compressed_arr))
+        create_image(compressed_arr, "compressed")
+        recovered  = np.uint8(lsb_decode_secret())
+        create_image(recovered, "secret")
+        #handle_channel(secret, luminance_quantization_matrix)
     else:
-        channel_matrix = {0: luminance_quantization_matrix, 1:chrominance_quantization_matrix, 2:chrominance_quantization_matrix}
+        channel_matrix = {0: LUMINANCE_MATRIX, 1:CHROMINANCE_MATRIX, 2:CHROMINANCE_MATRIX}
         for i in range(3):
             img[:,:,i] = handle_channel(img[:,:,i], channel_matrix[i])
         compressed_arr = cv2.cvtColor(img, cv2.COLOR_YCrCb2BGR)
         create_image(clean_values(compressed_arr))
         remove_rle_file()
         
-    
 
-    # compressed_arr = cv2.cvtColor(img, cv2.COLOR_YCrCb2BGR)
-    # padded = np.uint8(pad_image(compressed_arr, 8*(math.ceil(img.shape[0]/8)), 8*(math.ceil(img.shape[1]/8)), 3))
-    # create_image(clean_values(padded))
-
-    # secret = get_file(args.s)
-   
-    # secret = split_secret(secret)
-    # quantization_matrix = create_luminance_quantization_matrix()
-    # compressed_arr = split_into_blocks(img, quantization_matrix)
-    # compressed_arr = run_length_to_image()
-    
-    # compressed_arr = lsb_embed_secret(secret, compressed_arr)
-    # create_image(clean_values(compressed_arr))
-    # remove_rle_file()
 if __name__ == "__main__":
     main()
