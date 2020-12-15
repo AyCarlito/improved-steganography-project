@@ -18,6 +18,8 @@ def lsb_embed_secret(secret, vessel):
     secret = secret.flatten()
     vessel = vessel.flatten()
 
+    secret[0] = secret_height/8
+    secret[1] = secret_width/8
     for secret_pixel in secret:
         secret_bin_repr = np.unpackbits(secret_pixel)
         vessel_selection = vessel[index*8:index*8+8]
@@ -30,26 +32,39 @@ def lsb_embed_secret(secret, vessel):
             vessel_selection[i] = vessel_pixel
         vessel[index*8:index*8+8] = vessel_selection
         index+=1
-
-    vessel[0] = (secret_height/8)
-    vessel[8] = (secret_width/8)
     return vessel.reshape((height,width))
 
-def lsb_decode_secret():
-    stego = jpeg_encode.get_file("compressed.jpeg").flatten()
+def lsb_decode_secret(stego_name):
+    stego = jpeg_encode.get_file("%s" % stego_name)
+    if len(stego.shape)==2:
+        stego = stego.flatten()
+        decoded = lsb_decode_helper(stego)
+    else:
+        for i in range(3):
+            stego_channel = stego[:,:,i].flatten()
+            print(stego_channel[0:16])
+            try:
+                decoded = lsb_decode_helper(stego_channel)
+            except ValueError as e:
+                pass
+    return decoded
+    
+
+def lsb_decode_helper(stego):
     secret = []
     index = 0
-
-    height = stego[0]*8
-    width = stego[8]*8
     for index in range(len(stego)//8):
         stego_selection = stego[index*8:index*8+8]
         secret_pixel = []
         for i, stego_pixel in enumerate(stego_selection):
             stego_pixel_bin_repr = np.unpackbits(stego_pixel)
-            secret_pixel.append(stego_pixel_bin_repr[-3])
+            secret_pixel.append(stego_pixel_bin_repr[-3]) 
         secret.append(np.packbits(secret_pixel)[0])
         index+=1
+    height = secret[0]*8
+    width = secret[1]*8
+    print(height)
+    print(width)
     return np.asarray(secret)[0:(height*width)].reshape((height, width))
 
 def random_lsb_embed_secret(secret, vessel):
@@ -82,8 +97,8 @@ def random_lsb_embed_secret(secret, vessel):
     vessel[8] = (secret_width/8)
     return vessel.reshape((height,width))
 
-def random_lsb_decode_secret():
-    stego = jpeg_encode.get_file("compressed.jpeg")
+def random_lsb_decode_secret(stego_name):
+    stego = jpeg_encode.get_file("%s" % stego_name)
     random.seed(stego.shape[0])
     stego = stego.flatten()
     secret = []

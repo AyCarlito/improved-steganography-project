@@ -139,34 +139,31 @@ def handle_grayscale(vessel, secret, qtmatrix, mode):
     compressed_arr = clean_values(handle_channel(vessel, qtmatrix))
     if mode=="LSB":
         compressed_arr = lsb_jpeg.lsb_embed_secret(secret, np.uint8(compressed_arr))
-        create_image(compressed_arr, "compressed")
-        recovered = lsb_jpeg.lsb_decode_secret()
-        create_image(recovered, "secret")
     elif mode=="LSBRandom":
         compressed_arr = lsb_jpeg.random_lsb_embed_secret(secret, np.uint8(compressed_arr))
-        create_image(compressed_arr, "compressed")
-        recovered = lsb_jpeg.random_lsb_decode_secret()
-        create_image(recovered, "secret")
-    else:
-        create_image(compressed_arr, "compressed")
+    create_image(compressed_arr, "compressed")
     
 def handle_colour(vessel, secret, channel_matrix, mode):
     for i in range(3):
         vessel[:,:,i] = handle_channel(vessel[:,:,i], channel_matrix[i])
     if mode=="LSB":
-        vessel[:,:,0] = lsb_jpeg.lsb_embed_secret(secret, np.uint8(vessel[:,:,0]))
-        vessel[0,0,1] = vessel[0,0,0]
-        vessel[0,0,2] = vessel[0,0,0]
-        vessel[0,8,1] = vessel[0,8,0]
-        vessel[0,8,2] = vessel[0,8,0]
-        compressed_arr = cv2.cvtColor(vessel, cv2.COLOR_YCrCb2BGR)
-        create_image(clean_values(compressed_arr), "compressed")
-        recovered = np.asarray(lsb_jpeg.lsb_decode_secret())
-        create_image(recovered, "secret")
-    else:
-        compressed_arr = cv2.cvtColor(img, cv2.COLOR_YCrCb2BGR)
-        create_image(clean_values(compressed_arr), "compressed")
+        if len(secret.shape) == 2:
+            vessel[:,:,0] = lsb_jpeg.lsb_embed_secret(secret, np.uint8(vessel[:,:,0]))
+        else:
+            for i in range(3):
+                vessel[:,:,i] = lsb_jpeg.lsb_embed_secret(secret[:,:,i], np.uint8(vessel[:,:,i]))
+    compressed_arr = cv2.cvtColor(vessel, cv2.COLOR_YCrCb2BGR)
+    create_image(clean_values(compressed_arr), "compressed")
     remove_rle_file()
+
+def embeddable(vessel, secret):
+    if((secret.shape[0]*secret.shape[1])>(vessel.shape[0]*vessel.shape[1]/8)):
+        print("Insufficient number of vessel bits")
+        return False
+    elif(len(secret.shape)>len(vessel.shape)):
+        print("Cannot embed colour image in grayscale")
+        return False
+    return True
 
 def main():
 
@@ -174,7 +171,7 @@ def main():
 
     args = get_arguments()
 
-    img = get_file(args.v)
+    vessel = get_file(args.v)
     secret = get_file(args.s)
     quality_factor = int(args.q)
     mode = args.m
@@ -182,12 +179,11 @@ def main():
     SCALED_LUMINANCE_MATRIX = np.floor_divide(LUMINANCE_MATRIX, quality_factor)
     SCALED_CHROMINANCE_MATRIC = np.floor_divide(CHROMINANCE_MATRIX, quality_factor)
 
-    if((secret.shape[0]*secret.shape[1])>(img.shape[0]*img.shape[1]/8)):
-        print("Cannot embed secret in image")
+    if not (embeddable(vessel, secret)):
         quit()
 
-    if len(img.shape) == 2:
-        handle_grayscale(img, secret, SCALED_LUMINANCE_MATRIX, mode)
+    if len(vessel.shape) == 2:
+        handle_grayscale(vessel, secret, SCALED_LUMINANCE_MATRIX, mode)
     else:
         channel_matrix = {0: SCALED_LUMINANCE_MATRIX, 1:SCALED_CHROMINANCE_MATRIC, 2:SCALED_CHROMINANCE_MATRIC}
         handle_colour(vessel, secret, channel_matrix, mode)
