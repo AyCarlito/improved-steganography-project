@@ -3,8 +3,8 @@
 \usepackage{times}
     \usepackage{fullpage}
     
-    \title{ {{cookiecutter.project_title}}
-    \author{ {{cookiecutter.student_name}} - {{cookiecutter.student_id}} }
+    \title{Improved Steganography Algorithm}
+    \author{Daniel Hislop - 2317990H}
 
     \begin{document}
     \maketitle
@@ -18,51 +18,51 @@
 
 \subsubsection{Motivation}\label{motivation}
 
-\emph{{[}Clearly motivate the purpose of your project; why someone would
-care about what you are doing{]}}
+Steganography is the practice of concealing secret data within an object. Bit-Plane Complexity Segmentation (BPCS) is one such algorithm for accomplishing this. BPCS's main advantage is a higher embedding capacity when compared to existing steganographic techniques such as Least Significant Bit (LSB) steganography. However, BPCS is susceptible to steganalysis techniques meaning the presence of a hidden payload can be both detected and extracted.  
+
+In the specific context of images; the JPEG image format is the most common. Since the JPEG algorithm employs lossy compression, any hidden embedded data is likely to be lost. As a result, the methods used for embedding in JPEG images will differ from those for lossless formats such as BMP. 
+
 
 \subsubsection{Aims}\label{aims}
 
-\emph{{[}Clearly state what the project is intended to do. This should
-be something which is measurable; it should be possible to tell if you
-succeeded{]}}
+This project aims to address vulnerabilities of the BPCS algorithm by implementing improvements which lead to greater resistance to digital detection and reduced image degradation. Both the standard and improved algorithm will be evaluated using a novel automated tool. In addition, the project will also look at steganographic techniques used in conjunction with lossy compression algorithms such as JPEG.
 
 \subsection{Progress}\label{progress}
 
-\emph{{[}Briefly state your progress so far, as a bulleted list{]}}
+\begin{itemize}
+    \item Standard BPCS Algorithm - Algorithm has been implemented in full. Allows for embedding of grayscale image in grayscale, grayscale image in colour, colour image in colour.
+    \item Improved BPCS Algorithm - Two modifications to the algorithm have been implemented. These are: different complexity thresholds for each bitplane and random bitplane embedding order. 
+    \item JPEG Compression - The baseline JPEG compression algorithm has been implemented. The baseline algorithm is defined as: split image into 8x8 blocks, perform DCT on each block, quantize the DCT coefficients (lossy compression), perform zig-zag encoding and then run-length encoding (lossless compression). Can compress both grayscale and colour images. 
+    \item JPEG Steganography - Three steganographic algorithms have been implemented. Sequential embedding order least significant bit, sequential embedding order third least significant bit, and random embedding order least significant bit. Can embed grayscale in grayscale and grayscale in colour.
+\end{itemize}
+
 
 \subsection{Problems and risks}\label{problems-and-risks}
 
 \subsubsection{Problems}\label{problems}
 
-\emph{{[}What problems have you had so far, that have held up the
-project?{]}}
+Issue occurred with JPEG steganography. While I have implemented the JPEG compression steps myself, the open-cv library, for creating the JPEG image from an array, actually performs compression as well. This means the image will be compressed twice, leading to changes in the pixel values. The change in pixel values was the motivation to implement 3rd least significant bit over least significant bit steganography. The change in algorithm ensured the payload was recoverable. 
+
+When implementing the BPCS algorithm, the variable complexity threshold improvement would result in the payload being unrecoverable. The issue only seems to be present when selecting a threshold over 0.5. In future this can be rectified. The variable thresholds range between 0 and 0.5, rather than 0 and 1. 
 
 \subsubsection{Risks}\label{risks}
 
-\emph{{[}What problems do you foresee in the future and how will you
-mitigate them?{]}}
+\begin{itemize}
+    \item Unclear of specific steganalysis techniques for JPEG images. \textbf{Mitigation:} will perform background research. 
+    \item In the BPCS algorithm, the random bitplane embedding order modification is unlikely to show an improvement during evaluation. \textbf{Mitigation:} Have thought of a third modification who's efficacy would be demonstrated by the aforementioned modification failing to improve the algorithm.
+    \item Currently have no evaluation metrics aside from detection rate of automated tool. \textbf{Mitigation:} Perform further background research to determine relevant metrics to include.
+\end{itemize}
 
 \subsection{Plan}\label{plan}
-
-\emph{{[}Time plan, in roughly weekly to monthly blocks, up until
-submission week{]}}
-
-    
-\subsection{Ethics and data}\label{ethics}
-\emph{Specify what ethical approval you need to do your evaluation and how you are approaching it. This is mandatory. 
-Specify what data you expect to collect in your evaluation. Explain how this data will help you evaluate your project.
-}
-
-Options for ethics:
-\item This project does not involve human subjects or data. No approval required.
-\item I have verified that the ethics checklist will apply to any evaluation I need to do. I will sign and complete the checklist.
-\item I have sought ethical guidance from the School's ethics convener and I will:
+\textbf{Semester 2}
 \begin{itemize}
-    \item Proceed under specific instructions from the Ethics convener (e.g. modified checklist).
-    \item Apply for College Ethics Board approval.
-    \item Other procedure (give details)
-\end{itemize}    
-
-
+    \item Week 1-2: Write up of BPCS and improvements.
+    \item Week 3: Write up of JPEG compression and steganography.
+    \item Week 4: Complete implementation of automated tool.
+    \item Week 5: Outline evaluation methodology.
+    \item Week 6: Run evaluation experiments.
+    \item Week 7-8: Write up of evaluation (includes automated tool).
+    \item Week 9-10: Finish tests and documentation of system, fill in any missing content of dissertation.
+    
+\end{itemize}
 \end{document}
