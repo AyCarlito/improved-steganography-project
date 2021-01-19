@@ -192,6 +192,7 @@
 * *0.5 Hours* Fixed issue where some grayscale images caused program to crash. Fixed by adding case where image mode is "P" and converting to "L"
 * *0.5 Hours* Restructured Directories. Seperate folders for JPEG, BPSC algorithms and Automated Tool. 
 
+## Project Week
 
 ### 8 Dec 2020
 
@@ -210,6 +211,77 @@
 * *0.5 Hour* JPEG Compression now working for colour and grayscale, but compressed image will have green border around outside if image dimensions not divisable by 8.
 * *0.5 Hour* Tried using cv2.copyMakeBorder function to correct problem. Did not work
 * *0.5 Hour* Fixed issue by resizing image as it is read in.
+
+
+### 13 Dec 2020
+
+* *0.5 Hour* Removed functions to create quantization matrices. These are now global variables. 
+* *0.5 Hour* Removed function to pad image which is no longer necessary. 
+* *2 Hours* LSB Steganography. Does not work.
+
+### 14 Dec 2020
+
+* *3 Hours* Created seperate functions to handle grayscale and colour images. Makes use of function to handle single channel.
+* *1 Hour* Fixed LSB steganography by adding paramter to openCV write image.
+
+### 15 Dec 2020
+
+* *2 Hours* Added random LSB steganography.
+* *0.5 Hour* Moved LSB functions to seperate file.
+
+## Christmas Break
+
+## Semester 2
+
+### 4 Jan 2021
+
+* *1 Hour* Motivation section of dissertation introduction. Gave historical example of steganography usage and description of what steganography is.
+* *0.5 Hour* Outline of the differences between simple steganography like LSB and BPCS
+* *0.5 Hour* Reason for JPEG being steganographhy being different.
+
+### 5 Jan 2021
+
+* *1 Hour* List of project aims
+* *1 Hour* Finished off motivation.
+
+### 6 Jan 2021 
+
+* *1 Hour* Skeleton outline of backgrouns chapter. Will be Lit Review followed by explanation of relevant information.
+
+## Week 1
+
+### 12 Jan 2021
+
+* *0.5 Hour* Supervisor meeting
+
+### 15 Jan 2021
+
+* *1 Hour* Started background chapter. Explained terminology and fundamental concepts like bitplanes and pixels.
+* *0.5 Hour* Brief overview of BPCS algorithm.
+* *0.5 Hour* Brief overview of JPEG compression.
+
+### 17 Jan 2021
+
+* *0.5 Hour* Reworked pixels subsection.
+* *1 Hour* Did LSB emebdding section. Added figures to this.
+
+## Week 2
+
+### 18 Jan 2021
+
+* *1 Hour* Explanation of Discrete Cosine Transformation
+* *0.5 Hour* Creation of cosine functions graphed using desmos.
+* *0.5 Hour* DC vs AC Coefficients.
+
+### 19 Jan 2021
+
+* *0.5 Hour* Supervisor meeting
+* *0.5 Hour* Update meetings.md
+* *1 Hour* Update timelog
+
+
+
+
 
 
 
