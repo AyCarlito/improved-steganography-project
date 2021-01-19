@@ -85,5 +85,31 @@ JPEG compression is now working. Issue was with Discrete Cosine Transform and In
 Agreed to have next meeting in 3 weeks time -> Don't expect to get much work done, as coursework due in next week and exam the week after.
 
 
+## Eighth Meeting - 15th Dec 2020
 
+* Meeting Duration: 12:31-12:38
+
+### Discussion
+
+Went over everything I've missed. 
+- Standard BPCS Algorithm. Works for both graysale and colour. Moved gray coding into standard. Added 2 modifications.
+- JPEG. Now works for colour images. Third LSB Steganography, Random LSB steganography. Fixed issue with recovering secret due to openCV.
+
+Discussed plan going forwards. Start writeup and finish automated tool.
+
+## Ninth Meeting - 12th Jan 2021
+
+* Meeting Duration: 13:31-13:35
+
+### Discussion
+
+Asked for guidance on writing dissertation. Will be sticking to plan laid out in status report. These meetings will be used to get feedback on sections of dissertation.
+
+## Tenth Meeting - 19th Jan 2021
+
+* Meeting Duration: 13:30-13:35
+
+### Discussion
+
+Went over Introduction in dissertation. This only needs to be a working version for now to motivate rest of writing, will likely rewrite at the end.
 
