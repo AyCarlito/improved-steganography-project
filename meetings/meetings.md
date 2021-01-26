@@ -113,3 +113,11 @@ Asked for guidance on writing dissertation. Will be sticking to plan laid out in
 
 Went over Introduction in dissertation. This only needs to be a working version for now to motivate rest of writing, will likely rewrite at the end.
 
+## Eleventh Meeting - 26th Jan 2021
+
+* Meeting Duration: 13:30 - 13:35
+
+### Discussion
+
+Went over Background in dissertation. Explicitly reference. Need to alter terminology section.
+
