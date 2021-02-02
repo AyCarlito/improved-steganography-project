@@ -121,3 +121,11 @@ Went over Introduction in dissertation. This only needs to be a working version 
 
 Went over Background in dissertation. Explicitly reference. Need to alter terminology section.
 
+## Twelfth Meeting - 2 Feb 2021
+
+* Meeting Duration: 13:30 - 13:33
+
+### Discussion
+
+Went over sections of dissertation. Will be working on detection tool this week and performing evaluation the week after. Design section left till the end. In implemenation include screenshots of all parts of code. 
+
