@@ -1,10 +1,12 @@
-import numpy as np
-from PIL import Image
-import os
-import argparse
-import encode, decode, steganalysis
 from subprocess import Popen, PIPE
 from collections import Counter
+import numpy as np
+import os
+import argparse
+import plotly.graph_objects as go
+import plotly.figure_factory as ff
+from BPCS_Steganography import encode
+import steganalysis
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="BPCS StegDectect Tool")
@@ -55,9 +57,28 @@ def known_message_and_stego(args):
 
 def stego_only(args):
     stego_arr = encode.get_file(args.stego)
-    stego_bitplane_arr = encode.get_bitplane_arr(stego_arr)
-    stego_data = encode.split_into_blocks(stego_bitplane_arr)
+    stego_bitplane_arr = encode.get_bitplane_arr(stego_arr[0])
+    stego_data = encode.split_into_blocks(stego_bitplane_arr, 0)
     stego_complexities = steganalysis.complexity(stego_data)
+    max_complexity = max(stego_complexities)
+    if (max_complexity>0.9):
+        print("Hidden Payload")
+    else:
+        print("No Hidden Payload")
+    quit()
+    chunk = len(stego_complexities)//8
+    bitplane_complexities = []
+    group_labels = ["Bitplane 7", "Bitplane 6", "Bitplane 5", "Bitplane 4", "Bitplane 3", "Bitplane 2", "Bitplane 1", "Bitplane 0"]
+    fig = ff.create_distplot(stego_complexities, ["Bitplanes"], show_hist=False, show_rug=False)
+    fig.show()
+    quit()
+    for i in range(8):
+        bitplane_complexities.append(stego_complexities[i*chunk:i*chunk+chunk])
+
+    fig = ff.create_distplot(bitplane_complexities, group_labels, show_hist=False, show_rug=False)
+    fig.show()
+    quit()
+
     stego_complexities = [complexity for complexity in stego_complexities if(complexity >= 0.1)]
     frequencies = Counter(stego_complexities).most_common(2)    
     if not (0.5<=frequencies[0][0] and frequencies[0][0]<=0.6):
@@ -65,6 +86,10 @@ def stego_only(args):
     else:
         print("No Hidden Payload")
     return
+
+def create_histogram(x):
+    fig = go.Figure(data=[go.Histogram(x=x, histnorm="probability")])
+    fig.show()
 
 
 
