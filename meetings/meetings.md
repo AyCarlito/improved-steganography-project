@@ -129,3 +129,12 @@ Went over Background in dissertation. Explicitly reference. Need to alter termin
 
 Went over sections of dissertation. Will be working on detection tool this week and performing evaluation the week after. Design section left till the end. In implemenation include screenshots of all parts of code. 
 
+## Meeting 12 - 9 Feb 2021
+
+* Meeting Duration: 13:31 - 13:39
+
+### Discussion
+
+Started write up of evaluation, done enough of automated tool to start this. One modificatio will likely have no improvement, this is finde as long as it is explained why. 
+Extensive documentaton isn't needed, only a README to allow for usage. Next meeting will be in 2 weeks, will email section of evaluation and hopefully start conclusion.
+
