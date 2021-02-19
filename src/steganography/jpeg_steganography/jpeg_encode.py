@@ -32,11 +32,11 @@ CHROMINANCE_MATRIX = np.array([
 ])
 
 def get_arguments():
-    parser = argparse.ArgumentParser(description="BPCS Encoding tool")
+    parser = argparse.ArgumentParser(description="JPEG Encoding tool")
     parser.add_argument("v", type=str, help="Vessel Image")
     parser.add_argument("s", type=str, help="Secret Image")
     parser.add_argument("q", type=str, help="Quality Factor")
-    parser.add_argument("m", type=str, choices=["LSB", "LSBRandom"], help="Embedding Algorithm")
+    parser.add_argument("m", type=str, choices=["LSB", "LSBRandom", "Compress"], help="Algorithm")
     args = parser.parse_args()
     return args
 
@@ -179,8 +179,8 @@ def main():
     SCALED_LUMINANCE_MATRIX = np.floor_divide(LUMINANCE_MATRIX, quality_factor)
     SCALED_CHROMINANCE_MATRIC = np.floor_divide(CHROMINANCE_MATRIX, quality_factor)
 
-    if not (embeddable(vessel, secret)):
-        quit()
+    # if not (embeddable(vessel, secret)):
+    #     quit()
 
     if len(vessel.shape) == 2:
         handle_grayscale(vessel, secret, SCALED_LUMINANCE_MATRIX, mode)
