@@ -138,3 +138,28 @@ Went over sections of dissertation. Will be working on detection tool this week 
 Started write up of evaluation, done enough of automated tool to start this. One modificatio will likely have no improvement, this is finde as long as it is explained why. 
 Extensive documentaton isn't needed, only a README to allow for usage. Next meeting will be in 2 weeks, will email section of evaluation and hopefully start conclusion.
 
+## Meeting 13 - 23rd February 2021
+
+* Meeting Duration: 13:30-13:40
+
+### Discussion
+
+Revaluation as it currently stands has a lots of repeated informaiton with only small variance, e.g. evaluation of standard and improved algorithms. Should reword and shorten. 
+Increase figure size.
+Images are broken and not displaying.
+Making jpeg tool work for 24-bit colour and 24-bit colour is worth putting in future work section. 
+Detection method in background section did not work. Keep it and explain why it didn't work, and what was performed instead.
+Improvemens don't have to actually improve the algorithm, so long as it is explained why they didn't work, and what steps can be taken to address it.
+
+## Meeting 14 - 2nd March 2021
+
+* Meeting Duration: 13:30-13:38
+
+### Discussion
+
+Literature review does not have to be much longer than it already is. Lit review for this prooject should not be a wide survey. 
+Small figure size in design section.
+Missing arrow in system archicture diagram. 
+Plan to have implementation done for next meeting, and then evaluation for meeting after that. 
+Also worth putting in section to show maximum embedding capacity of each algorithm. Can also explain how modifications impacted the capacity. 
+Meetings closer to deadline will be used for full read through. 

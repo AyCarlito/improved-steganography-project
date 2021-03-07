@@ -279,6 +279,140 @@
 * *0.5 Hour* Update meetings.md
 * *1 Hour* Update timelog
 
+### 23 Jan 2021
+
+* *1 Hour* Analysis Section of dissertation. Proivded list of requirements (these were written with MoSCoW prioritisation).
+* *1 Hour* Literature Review section in background of disseration.
+
+### 24 Jan 2021
+
+* *0.5 Hour* Created Gantt Chart
+* *1 Hour* Discussed libraries used
+* *0.5 Hour* Rest of implementation
+
+## Week 3
+
+### 31 Jan 2021
+
+* *1 Hour* BPCS Background. Expanded on steps.
+* *0.5 Hour* JPEG Background. Quantization, Zig Zag. RLE
+
+## Week 4
+
+### 1 Feb 2021
+
+* *1 Hour* Steganalysis background. 
+* *0.5 Hour* Design. System architecture and bpcs tool
+
+### 2 Feb 2021
+
+* *1 Hour* Evaluation section. Overview of chapter, experiment methodology, meeting the requirements section.
+
+### 5 Feb 2021
+
+* *0.5 Hour* Background reading of steganalysis paper. Uses histogram analysis to detect.
+* *1 Hour* Tried to implement the steganlaysis technique found in paper, however results of the paper could not be reproduced. (Valley signature did not appear in my own results.)
+* *1 Hour* Implemented a different mechanism for detection. Natural images seemed to have a maximum complexity value of no higher than 0.9. After emebdding it is over 0.9. A simple check for maximum block complexity value enables detection.
+
+### 7 Feb 2021
+
+* *1 Hour* Detection tool section of implementation. Provided overview of te 4 cases and how they were implemented. Also described the new setganalysis technique used insetad of the one specified in the background. 
+
+## Week 5 
+
+### 8 Feb 2021
+
+* *1 Hour* Evaluation section - Test images section outlining what images are uased and where they are sources from. Evaluation of standard algorithm, shows usage of embedding and extractiono of grayscale and colour images. Evaluation of improved algorithm, same as standard just with modifications. 
+
+### 12 Feb 2021
+
+*0.5 Hour* - JPEG Compression section evaluation. Discussed metric to be used such as mean square error and peak signal to noise ratio.
+*0.5 Hour* - Wrote start of conclusion section stating what chapter would be about.
+*0.5 Hour *- Uploaded test images to overleaf and added tables into evaluation section.
+
+### 14 Feb 2021
+
+*0.5 Hour* - Revised system architecture section. 
+*0.5 Hour *- Added User interface section. Describing consistency of design and command line application. 
+*0.5 Hour* - Added maintainability section
+
+## Reading Week
+
+### 15 Feb 2021
+
+*0.5 Hour* Wrote documentation section and added sphinx as library used in implementation.
+*1 Hour *Added more code blocks in implementation section
+
+### 16 Feb 2021
+
+*1.5 Hours* - Performing evaluation of standard BPCS algorithm. Added figures to support claims.
+
+### 17 Feb 2021
+
+*1 Hour*- Adding figures to the modified algorithm evaluation section. 
+*1 Hour*- JPEG Compression evaluation section. Includes table outlining , file name, type, size compressed size and compression ratio.
+
+### 18 Feb 2021
+
+*2 Hours* - Evaluation section, evaluating the modifications and reporting on detection rate. Tables produced for natural images, stegos created from standard algorithm, stegos created from variable complexity, stegos created from RBEO.
+
+### 20 Feb 2021
+
+*1 Hour* - Conclusion section of dissertation. Wrote summary and future work.
+
+## Week 6
+
+*0.5 Hour* - justification of modifications in design section
+*1.5 Hour *- Making system architecture diagrams
+
+### 26 Feb 2021
+
+*0.5 Hour*- Writing textual description of bpcs, jpeg and detection tools and adding architectural diagrams.
+*0.5 Hour*- Rewrote JPEG compression and steganography design.
+*0.5 Hour*- Improved writing of system architecture section.
+
+### 27 Feb 2021
+
+*1 Hour* Rewrote sections in implementation. VErsion control, methodology, development language, issue tracking. 
+
+### 28 Feb 2021
+
+*1 Hour* - lLibraries Used
+
+## Week 7
+
+### 1 March 2021
+
+*1.5 Hour *- implementation section. Writing about bpcs tool and jpeg
+
+### 2 March 2021
+
+*0.5 Hour* Meeting with supervisor.
+
+### 4 March 2021
+
+*1.5 Hours* Rewrite of BPCS tool. Includes additional paragraphs about decoder, metadata. Better explains how gray coding conversion works.
+
+### 5 March 2021
+
+*1.5 Hours* - Rewrite of Detection tool. Explanation of detection cases. Only one figure added. 
+
+### 6 Feb 2021
+
+*1.5 Hours* going over code for four cases in detection tool. Removed redundant code. Moved plotly histogram creation to seprate function. Fixed known cover and stego case. updated argparse help command to show all cases that can be chosen.
+*0.5 Hours* Wrote up past meetings.
+*0.5 Hours* Writing up timelog. 
+*0.5 Hours* Added future work based on detection tool.
+*1 Hour* Rewrite of JPEG implementation.
+
+
+
+
+
+
+
+
+
 
 
 
