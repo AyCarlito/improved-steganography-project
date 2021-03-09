@@ -1,13 +1,13 @@
 from itertools import groupby
 import numpy as np
 import argparse
+import lsb_jpeg
 import zigzag_encoding
 import cv2
 import csv
 import math
 import os
 import ast
-import lsb_jpeg
 
 LUMINANCE_MATRIX = np.array([
     [16,11,10,16,24,40,51,61],
@@ -33,10 +33,9 @@ CHROMINANCE_MATRIX = np.array([
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="JPEG Encoding tool")
-    parser.add_argument("v", type=str, help="Vessel Image")
-    parser.add_argument("s", type=str, help="Secret Image")
-    parser.add_argument("q", type=str, help="Quality Factor")
-    parser.add_argument("m", type=str, choices=["LSB", "LSBRandom", "Compress"], help="Algorithm")
+    parser.add_argument("-v", "--vessel", type=str, help="Vessel Image")
+    parser.add_argument("-s", "--secret", type=str, help="Secret Image")
+    parser.add_argument("-m", "--mode", type=str, choices=["LSB", "LSBRandom", "TLSB", "Compress"], help="Algorithm")
     args = parser.parse_args()
     return args
 
@@ -171,21 +170,17 @@ def main():
 
     args = get_arguments()
 
-    vessel = get_file(args.v)
-    secret = get_file(args.s)
-    quality_factor = int(args.q)
-    mode = args.m
+    vessel = get_file(args.vessel)
+    secret = get_file(args.secret)
+    mode = args.mode
 
-    SCALED_LUMINANCE_MATRIX = np.floor_divide(LUMINANCE_MATRIX, quality_factor)
-    SCALED_CHROMINANCE_MATRIC = np.floor_divide(CHROMINANCE_MATRIX, quality_factor)
-
-    # if not (embeddable(vessel, secret)):
-    #     quit()
+    if not (embeddable(vessel, secret)):
+        quit()
 
     if len(vessel.shape) == 2:
-        handle_grayscale(vessel, secret, SCALED_LUMINANCE_MATRIX, mode)
+        handle_grayscale(vessel, secret, LUMINANCE_MATRIX, mode)
     else:
-        channel_matrix = {0: SCALED_LUMINANCE_MATRIX, 1:SCALED_CHROMINANCE_MATRIC, 2:SCALED_CHROMINANCE_MATRIC}
+        channel_matrix = {0: LUMINANCE_MATRIX, 1:CHROMINANCE_MATRIX, 2:CHROMINANCE_MATRIX}
         handle_colour(vessel, secret, channel_matrix, mode)
         
         

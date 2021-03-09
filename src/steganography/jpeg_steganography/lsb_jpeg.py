@@ -63,8 +63,6 @@ def lsb_decode_helper(stego):
         index+=1
     height = secret[0]*8
     width = secret[1]*8
-    print(height)
-    print(width)
     return np.asarray(secret)[0:(height*width)].reshape((height, width))
 
 def random_lsb_embed_secret(secret, vessel):
