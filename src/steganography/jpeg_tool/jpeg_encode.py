@@ -1,8 +1,13 @@
+"""
+.. module:: jpeg_encode
+   :synopsis: Functionality of JPEG Compression is defined here
+.. moduleauthor::  Daniel Hislop
+"""
+from jpeg_tool import lsb_jpeg
+from jpeg_tool import zigzag_encoding
 from itertools import groupby
 import numpy as np
 import argparse
-import lsb_jpeg
-import zigzag_encoding
 import cv2
 import csv
 import math

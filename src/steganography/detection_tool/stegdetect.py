@@ -1,10 +1,17 @@
+"""
+.. module:: stegdetect
+   :synopsis: Functionality of Detection Tool is defined here
+.. moduleauthor::  Daniel Hislop
+"""
+
+
 from collections import Counter
 import numpy as np
 import os
 import argparse
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
-from BPCS_Steganography import encode, decode
+from bpcs_tool import encode, decode
 
 
 COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}}

@@ -1,6 +1,11 @@
+"""
+.. module:: jpeg_decode
+   :synopsis: Functionality of JPEG Decoding is defined here
+.. moduleauthor::  Daniel Hislop
+"""
+from jpeg_tool import jpeg_encode
+from jpeg_tool import lsb_jpeg
 import argparse
-import jpeg_encode
-import lsb_jpeg
 import numpy as np
 
 def get_arguments():

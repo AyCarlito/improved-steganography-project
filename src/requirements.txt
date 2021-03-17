@@ -1,6 +1,0 @@
-pytest
-coverage
-numpy
-Pillow
-plotly
-opencv-python

@@ -1,6 +1,12 @@
+"""
+.. module:: lsb_jpeg
+   :synopsis: Functionality of LSB Embedding and Extraction is defined here
+.. moduleauthor::  Daniel Hislop
+"""
+
+from jpeg_tool import jpeg_encode
 import numpy as np
 import random
-import jpeg_encode
 
 def get_info(secret, vessel):
     height = vessel.shape[0]

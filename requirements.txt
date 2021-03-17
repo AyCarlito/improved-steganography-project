@@ -1,0 +1,8 @@
+pytest==6.6.1
+coverage==5.3
+numpy==1.1.9.2
+Pillow==7.2.0
+plotly==4.11.0
+opencv-python==4.4.0.46
+sphinx==3.5.2
+sphinx_rtd_theme==0.5.1

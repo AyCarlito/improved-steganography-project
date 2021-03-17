@@ -1,3 +1,9 @@
+"""
+.. module:: encode
+   :synopsis: Functionality of BPCS Embedding is defined here
+.. moduleauthor::  Daniel Hislop
+"""
+
 import numpy as np
 from PIL import Image
 import os
@@ -10,9 +16,31 @@ bitplanes = [7,6,5,4,3,2,1,0]
 #Gray Coding Functions Sourced from https://www.geeksforgeeks.org/decimal-equivalent-gray-code-inverse/# 
 
 def convert_to_gray_coding(matrix):
+    """**Convert binary code to gray coding**
+
+        This function takes a channel in an image and converts its binary representation decimal value to gray coding decimal value. Conversion of each pixel achieved through logical XOR 
+        of pixel and pixel rightshifted by 1.
+
+    Args:
+        matrix (ndarray): 2-Dimensional numpy array representing an image channel. 8-bit colour images will have a single channel. 24-bit colour images will have 3 channels (RGB).
+
+    Returns:
+        ndarray: 2-Dimensional numpy array of channel converted to gray coding.
+    """
     return matrix[:,:]^(matrix[:,:] >> 1)
 
 def convert_from_gray_coding(matrix):
+    """**Convert gray coding to binary code**
+
+        This function takes a channel in an image and converts its gray coding representation decimal value to binary represntation decimal value.
+        Conversion of a pixel - Logical XOR of inverse and pixel to give new inverse value. Rightshit pixel by 1. Loop until pixel cannot be rightshifted, converted pixel value is the final inverse.
+
+    Args:
+        matrix (ndarray): 2-Dimensional numpy array representing an image channel. 8-bit colour images will have a single channel. 24-bit colour images will have 3 channels (RGB)
+
+    Returns:
+        ndarray: 2-Dimensional numpy array of channel converted to binary code.
+    """
     for (row, col), value in np.ndenumerate(matrix):
         inv = 0
         while(value):
@@ -23,6 +51,17 @@ def convert_from_gray_coding(matrix):
     return matrix
 
 def conjugate(matrix):
+    """**Conjugation of an image block**
+
+        Conjugation is the process of transforming a non-complex block to a complex one. New complexity measure will be 1-x, where x is the original complexity measure.
+        Conjugation achieved by the logical XOR of image block and checkerboard pattern.
+
+    Args:
+        matrix (ndarray): 8x8 numpy array of an image block. 
+
+    Returns:
+        ndarray: 8x8 numpy array of conjugated block. 
+    """
     checkerboard = np.indices((matrix.shape[0],matrix.shape[1])).sum(axis=0) % 2
     ones = np.ones((matrix.shape[0], matrix.shape[1]))
     conjugated = np.logical_xor(checkerboard, matrix).astype(int)
@@ -30,6 +69,15 @@ def conjugate(matrix):
     return conjugated
 
 def get_arguments():
+    """**Command line argument parsing***
+
+        Use of the argparse library to parse user input in the command line application. Arguments are specified as positional arguments meaning something must be provied. Additionally, choice of algorithm 
+        is restricted to predefined selection.
+    
+
+    Returns:
+        Namespcae: Parsed user arguments.
+    """
     parser = argparse.ArgumentParser(description="BPCS Encoding tool")
     parser.add_argument("v", type=str, help="Vessel Image")
     parser.add_argument("s", type=str, help="Secret Image")
@@ -39,11 +87,26 @@ def get_arguments():
     return args
 
 def get_grayscale_channel(image):
+    """**Helper Function**
+
+    Args:
+        image (PIL Image Object): 8-bit colour image read in from file by Pillow.
+    Returns:
+        List: Returns a single element list containing numpy array of single channel in image.
+    """
     img_arr = np.array(image)
     image.close()
     return [img_arr]
 
 def get_colour_channels(image):
+    """**Helper Function**
+
+    Args:
+        image (PIL Image Object): [description]
+
+    Returns:
+        List: Three element list containing a numpy array for each channel in an RGB image.
+    """
     img_arr = np.array(image)
     r = img_arr[:,:,0]
     g = img_arr[:,:,1]
@@ -53,10 +116,17 @@ def get_colour_channels(image):
    
 
 def get_file(name):
-    """
-    Takes a string parameter indicating file name.
-    Reads in file and converts to np array, closes image. Returns np array.
-    This function gets the vessel and secret object arrays. 
+    """**Read in image from file**
+
+        Reads in the specified image using Pillow and returns a list of numpy arrays representing each channel in the image. Makes 
+        use of two helper functions. Image.mode used to check the colour depth of an image. "L" and "P" are 8-bit grayscale images. Anything 
+        else will be RGB. Helper functions called based on result of Image.mode
+
+    Args:
+        name (String): Name of image to be read.
+
+    Returns:
+        List: Variable length list contaning either one or three elements where each element is a numpy array representing the respective channel in an image.
     """
     print("Opening %s" % name)
     temp = Image.open("%s" % name)
@@ -69,14 +139,27 @@ def get_file(name):
     return channels
 
 def create_image(array, channel_type):
+    """Creates an image from the stego array**
+
+    Args:
+        array (ndarray): Numpy array of cover image containing an embedded payload.
+        channel_type (String): Akin to Pillow Image.mode. This specifies channels in the image. Either "L" or "RGB".
+    """
     stego = Image.fromarray(array, mode=channel_type)
     stego.save("stego.bmp")
 
 def get_bitplane_arr(matrix):
+    """**Create bitplane array**
+
+        Takes an image and converts every pixel into its binary representation to produce the bitplane array. 
+
+    Args:
+        matrix ([ndarray]): 2-Dimensional numpy array of channel in an image.
+
+    Returns:
+        [ndarray]: 3-Dimensional numpy array of shape (NxMx8) where N and M are width and height of image respectively. Binary representation of every pixel.
     """
-    Gets binary encoding of each pixel.
-    512x512x8 matrix. -> 512x512 pixels. 8 -> binary value of pixel.
-    """
+
     temp_bitplane_arr = np.zeros((matrix.shape[0], matrix.shape[1], 8))
     temp_bitplane_arr[:,:,0] = np.copy(matrix)
 
@@ -86,9 +169,18 @@ def get_bitplane_arr(matrix):
 
     
 def split_into_blocks(matrix, vessel_height):
+    """**Split image into 8x8 blocks**
+
+    Array slicing to produce 8x8 blocks for each bitplane in the bitplane array. 
+
+    Args:
+        matrix (ndarray): Bitplane array.
+        vessel_height (Int): Height of vessel object.
+
+    Returns:
+        List: Variable length list where each element is an 8x8 block. 
     """
-    Creates 8x8 blocks of pixels for each bitplane in the secret object
-    """
+
     data = []
     print("Creating 8x8 Blocks for each bitplane")
     for k in bitplanes:
@@ -98,6 +190,17 @@ def split_into_blocks(matrix, vessel_height):
     return data
 
 def get_complexity(matrix):
+    """Calculate complexity of an image block**
+    
+        Summation of pixel value changes, in image block, row wise and column wise divided by pixel value changes in a checkerboard pattern, row wise and column wise.
+        
+    Args:
+        matrix (ndarray): Image block.
+
+    Returns:
+        int: Complexity measure of an image block
+    """     
+
     current_complexity = 0
     maximum_complexity = ((matrix.shape[0]-1) * matrix.shape[1]) + ((matrix.shape[1]-1) * matrix.shape[0])
 
@@ -115,6 +218,16 @@ def get_complexity(matrix):
     return current_complexity/maximum_complexity
 
 def get_metadata(matrix, payload):
+    """Create metadata of payload to be hidden**
+
+
+    Args:
+        matrix ([type]): [description]
+        payload ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     total_blocks = np.reshape(np.array([int(i) for i in (np.binary_repr(len(payload), width=36))]), (4,9))
     height = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[0], width=18))]), (2,9))
     width = np.reshape(np.array([int(i) for i in (np.binary_repr(matrix.shape[1], width=18))]), (2,9))
