@@ -4,7 +4,35 @@ Documentation of Code
 BPCS Tool
 #########
 
-Documentation of BPCS Tool
+The BPCS tool is used for embedding a payload within a cover image using the Bit Plane Complexity
+Segmentation algorithm. This tool provides functionality for 8-bit colour and 24-bit colour
+images. Either the standard or modified algorithm can be selected for embedding and extraction.
+
+Usage
+*****
+
+While in the steganography directory, usage of the tool is as follows:
+
+**Encoding**
+
+*Windows*
+
+``py -m bpcs_tool.encode <path_to_cover_image> <path_to_payload_image> <algorithm>``
+
+*Linux*
+
+``python3 -m bpcs_tool.encode <path_to_cover_image> <path_to_payload_image> <algorithm>``
+
+**Decoding**
+
+*Windows*
+
+``py -m bpcs_tool.decode <path_to_cover_image> <path_to_payload_image> <algorithm>``
+
+*Linux*
+
+``python3 -m bpcs_tool.decode <path_to_cover_image> <path_to_payload_image> <algorithm>``
+
 
 encode.py
 *********
