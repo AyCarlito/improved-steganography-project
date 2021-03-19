@@ -8,18 +8,30 @@ from jpeg_tool import jpeg_encode
 import numpy as np
 import random
 
-def get_info(secret, vessel):
-    height = vessel.shape[0]
-    width = vessel.shape[1]
+
+def lsb_embed_secret(secret, vessel):
+    """**Embed payload using TLSB**
+
+    Payload height and payload width are the first things embedded.
+
+    Flatten cover and payload arrays to 1D. For every pixel in payload use np.unpackbits
+    to create binary representation. Select 8 pixel slice from cover. For each pixel in cover
+    slice, convert to binary using np.unpackbits. Set LSB to 1, set second LSB to 0, and embed
+    the payload bit in the third LSB of cover. Use np.packbits to create number from binary
+    representation. Reshape flattened cover array (which has payload in it) to original 2D 
+    shape.
+
+    Args:
+        secret (ndarray): Numpy array of payload
+        vessel (ndarray): Numpy array of cover
+
+    Returns:
+        ndarray: Numpy array of stego
+    """
+    index = 0
 
     secret_height = secret.shape[0]
     secret_width = secret.shape[1]
-    return height, width, secret_height, secret_width
-
-def lsb_embed_secret(secret, vessel):
-    index = 0
-
-    height, width, secret_height, secret_width = get_info(secret, vessel)
    
     secret = secret.flatten()
     vessel = vessel.flatten()
@@ -41,6 +53,19 @@ def lsb_embed_secret(secret, vessel):
     return vessel.reshape((height,width))
 
 def lsb_decode_secret(stego_name):
+    """**Extract payload using TLSB**
+    
+        Call decoder helper for each channel in stego. single channel will mean single call.
+        Three channels -> loop through with try and except. We use try and except as there
+        might not be a payload in each of the channels; a single channel payload can be
+        embedded in the red channel of cover. 
+
+    Args:
+        stego_name (String): File Name of stego
+
+    Returns:
+        ndarray: Extracted payload
+    """
     stego = jpeg_encode.get_file("%s" % stego_name)
     if len(stego.shape)==2:
         stego = stego.flatten()
@@ -48,7 +73,6 @@ def lsb_decode_secret(stego_name):
     else:
         for i in range(3):
             stego_channel = stego[:,:,i].flatten()
-            print(stego_channel[0:16])
             try:
                 decoded = lsb_decode_helper(stego_channel)
             except ValueError as e:
@@ -57,6 +81,18 @@ def lsb_decode_secret(stego_name):
     
 
 def lsb_decode_helper(stego):
+    """**Helper function for LSB extraction**
+
+        For every 8 pixel selection in stego. Loop through each pixel, convert to binary and 
+        append TLSB to list. First two recovered will be height and width of payload. Convert
+        list to numpy array and reshapre using height and width.
+            
+    Args:
+        stego (ndarray): Flattened stego array
+
+    Returns:
+        ndarray: Extracted payload.
+    """
     secret = []
     index = 0
     for index in range(len(stego)//8):
@@ -72,9 +108,27 @@ def lsb_decode_helper(stego):
     return np.asarray(secret)[0:(height*width)].reshape((height, width))
 
 def random_lsb_embed_secret(secret, vessel):
+    """**Embed payload using TLSBRandom**
+
+        Payload height and payload width are the first things embedded. Cover height used
+        as seed for random function. Divide length of cover by 8 and use random sample to give
+        random embedding order. Loop through each number in embedding order and use to create an 
+        8x pixel slice. eg element in embedding order is "1" can use this as slice [1:9].
+        Now that we have 8 pixel slice, the process is now the same as TLSB.
+
+    Args:
+        secret (ndarray): Numpy array of payload
+        vessel (ndarray): Numpy array of cover
+
+    Returns:
+        ndarray: Numpy array of stego
+    """
     index = 0
 
-    height, width, secret_height, secret_width = get_info(secret, vessel)
+    height = vessel.shape[0]
+    width = vessel.shape[1]
+    secret_height = secret.shape[0]
+    secret_width = secret.shape[1]
 
     secret = secret.flatten()
     vessel = vessel.flatten()
@@ -102,6 +156,20 @@ def random_lsb_embed_secret(secret, vessel):
     return vessel.reshape((height,width))
 
 def random_lsb_decode_secret(stego_name):
+    """**Extract payload using TLSBRandom**
+
+        Read in stego. Use height as seed. Flatten array. Recretae the embedding order.
+        Use embedding order to make 8 pixel slices, for each pixel in slice, use np unpackbits
+        to create binary representation. Extract TLSB from this and add to list. Reshape 
+        list into dimensions of payload. (height and width of payload are first two numbers
+        extracted)
+
+    Args:
+        stego_name (String): File name of stego
+
+    Returns:
+        ndarray: Extracted payload
+    """
     stego = jpeg_encode.get_file("%s" % stego_name)
     random.seed(stego.shape[0])
     stego = stego.flatten()

@@ -21,8 +21,8 @@ sys.path.insert(0, os.path.abspath('../../src/steganography'))
 # -- Project information -----------------------------------------------------
 
 project = 'Improved Steganography Algorithm'
-copyright = '2021, Daniel Hislop, Dr Ron Poet'
-author = 'Daniel Hislop, Dr Ron Poet'
+copyright = '2021, Daniel Hislop'
+author = 'Daniel Hislop'
 
 
 # -- General configuration ---------------------------------------------------
