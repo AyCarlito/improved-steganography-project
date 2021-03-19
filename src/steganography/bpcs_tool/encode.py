@@ -84,11 +84,11 @@ def get_arguments():
         Additionally, choice of algorithm is restricted to predefined selection.
     
     Returns:
-        Namespcae: Parsed user arguments.
+        Namespace: Parsed user arguments.
     """
     parser = argparse.ArgumentParser(description="BPCS Encoding tool")
-    parser.add_argument("v", type=str, help="Vessel Image")
-    parser.add_argument("s", type=str, help="Secret Image")
+    parser.add_argument("v", type=str, help="Cover Image")
+    parser.add_argument("s", type=str, help="Payload Image")
     parser.add_argument("a", choices=["standard", "improved"], type=str, help="Algorithm. Standard or Improved")
 
     args = parser.parse_args()

@@ -33,6 +33,7 @@ While in the steganography directory, usage of the tool is as follows:
 
 ``python3 -m bpcs_tool.decode <path_to_cover_image> <path_to_payload_image> <algorithm>``
 
+Using the "-h" flag will display a help message in the terminal.
 
 encode.py
 *********
@@ -47,7 +48,45 @@ decode.py
 JPEG Tool
 #########
 
-Documentation of JPEG Tool
+The JPEG Tool is used for performing image compression using the JPEG algorithm. Additionally,
+it is responsible for the embedding and extraction of a payload within compressed images. As
+part of the evaluation, MSE and PSNR metrics can be calculated and displayed in a plotly graph.
+
+Usage
+*****
+
+While in the steganography directory, usage of the tool is as follows:
+
+**Encoding**
+
+*Windows*
+
+``py -m jpeg_tool.jpeg_encode -v <path_to_cover_image> -s <path_to_payload_image> -m <choice of algorithm>``
+
+*Linux*
+
+``python3 -m jpeg_tool.jpeg_encode -v <path_to_cover_image> -s <path_to_payload_image> -m <choice of algorithm>``
+
+**Decoding**
+
+*Windows*
+
+``py -m jpeg_tool.jpeg_decode -s <path_to_stego_image> -m <choice of algorithm>``
+
+*Linux*
+
+``python3 -m jpeg_tool.jpeg_decode -s <path_to_stego_image> -m <choice of algorithm>``
+
+**Evaluation**
+
+*Windows*
+
+``py -m jpeg_tool.jpeg_evaluate -u <path_to_uncompressed_image> -c path_to_compressed_image -m <choice of algorithm>``
+
+*Linux*
+
+``python3 -m jpeg_tool.jpeg_evaluate -u <path_to_uncompressed_image> -c path_to_compressed_image -m <choice of algorithm>``
+
 
 jpeg_encode.py
 **************

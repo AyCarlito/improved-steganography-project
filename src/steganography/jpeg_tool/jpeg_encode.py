@@ -37,24 +37,44 @@ CHROMINANCE_MATRIX = np.array([
 ])
 
 def get_arguments():
+    """**Command line argument parsing**
+
+        Use of the argparse library to parse user input in the command line application. 
+        Arguments are specified as optional arguments meaning any combination of arguments 
+        can be provided. Additionally, choice of algorithm is restricted to predefined selection.
+    
+    Returns:
+        Namespace: Parsed user arguments.
+    """
     parser = argparse.ArgumentParser(description="JPEG Encoding tool")
-    parser.add_argument("-v", "--vessel", type=str, help="Vessel Image")
-    parser.add_argument("-s", "--secret", type=str, help="Secret Image")
-    parser.add_argument("-m", "--mode", type=str, choices=["LSB", "LSBRandom", "TLSB", "Compress"], help="Algorithm")
+    parser.add_argument("-v", "--cover", type=str, help="Cover Image")
+    parser.add_argument("-s", "--payload", type=str, help="Payload Image")
+    parser.add_argument("-m", "--mode", type=str, choices=["LSB", "TLSBRandom", "TLSB", "Compress"], help="Algorithm")
     args = parser.parse_args()
     return args
 
 def remove_rle_file():
+    """**Remove RLE csv file if it exists**
+    """
     try:
         os.remove("image.csv")
     except OSError:
         pass
 
 def get_file(name):
-    """
-    Takes a string parameter indicating file name.
-    Reads in file and converts to np array, closes image. Returns np array.
-    This function gets the vessel and secret object arrays. 
+    """**Read in image file using OpenCV**
+
+        Read file using OpenCV imread. IMREAD_UNCHANGED flag reads file as is. Check length of
+        shape, this will determine if we have an 8-bit grayscale of 24-bit colour RGB image. 
+        If 8-bit colour, read in the image again using IMREAD_GRAYSCALE flag, otherwise read
+        image and convert from BGR to YCrCb colour scheme. Images are resized such that 
+        height and width are divisible by 8.
+
+    Args:
+        name (String): File name
+
+    Returns:
+        [type]: [description]
     """
     img = cv2.imread(name, cv2.IMREAD_UNCHANGED)
     if len(img.shape) == 2:
@@ -67,11 +87,17 @@ def get_file(name):
     return image
 
 def create_image(matrix, name):
+    """**Write image to disk**
+
+    Args:
+        matrix ([type]): [description]
+        name ([type]): [description]
+    """
     cv2.imwrite("%s.jpeg" % name, matrix, [cv2.IMWRITE_JPEG_QUALITY, 100])
 
 
 def clean_values(matrix):
-    matrix[matrix>256] = 256
+    matrix[matrix>255] = 255
     matrix[matrix<0] = 0
     return matrix
 
@@ -91,13 +117,13 @@ def split_into_blocks(img, qtmatrix):
     return compressed
 
 def image_size_to_csv(height, width):
-    with open("image.csv", "w") as f:
+    with open("image.csv", "w", newline='') as f:
         wr = csv.writer(f)
         wr.writerow([height, width])
 
 def create_run_length_encoding(block):
     rle = [[i, len([*group])] for i, group in groupby(block)]
-    with open("image.csv", "a") as f:
+    with open("image.csv", "a", newline='') as f:
         wr = csv.writer(f)
         wr.writerow(rle)
 
@@ -128,6 +154,7 @@ def construct_block(row, qtmatrix):
     for each_rle in row:
         each_rle_as_list = ast.literal_eval(each_rle)
         block.extend([each_rle_as_list[0]]*each_rle_as_list[1])
+
     normalised = zigzag_encoding.inverse_zigzag_single(np.asarray(block))
     de_quantized = np.multiply(normalised, qtmatrix)
     compressed_image_block = cv2.idct(np.float32(de_quantized)).astype(int)
@@ -141,16 +168,16 @@ def handle_channel(img, quantization_matrix):
 
 def handle_grayscale(vessel, secret, qtmatrix, mode):
     compressed_arr = clean_values(handle_channel(vessel, qtmatrix))
-    if mode=="LSB":
+    if mode=="TLSB":
         compressed_arr = lsb_jpeg.lsb_embed_secret(secret, np.uint8(compressed_arr))
-    elif mode=="LSBRandom":
+    elif mode=="TLSBRandom":
         compressed_arr = lsb_jpeg.random_lsb_embed_secret(secret, np.uint8(compressed_arr))
     create_image(compressed_arr, "compressed")
     
 def handle_colour(vessel, secret, channel_matrix, mode):
     for i in range(3):
         vessel[:,:,i] = handle_channel(vessel[:,:,i], channel_matrix[i])
-    if mode=="LSB":
+    if mode=="TLSB":
         if len(secret.shape) == 2:
             vessel[:,:,0] = lsb_jpeg.lsb_embed_secret(secret, np.uint8(vessel[:,:,0]))
         else:
@@ -175,8 +202,8 @@ def main():
 
     args = get_arguments()
 
-    vessel = get_file(args.vessel)
-    secret = get_file(args.secret)
+    vessel = get_file(args.cover)
+    secret = get_file(args.payload)
     mode = args.mode
 
     if not (embeddable(vessel, secret)):
