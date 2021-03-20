@@ -163,3 +163,23 @@ Missing arrow in system archicture diagram.
 Plan to have implementation done for next meeting, and then evaluation for meeting after that. 
 Also worth putting in section to show maximum embedding capacity of each algorithm. Can also explain how modifications impacted the capacity. 
 Meetings closer to deadline will be used for full read through. 
+
+## Meeting 15 - 9th March 2021
+
+* Meeting Duration: 13:31-13:35
+
+### Discussion
+
+No issues with sections of dissertation that were emailed. Implemented MSE and PSNR calculations and dicsussed why this
+would be of benefit in evaluation. Plan to finish evaluation for following week. Expect first draft in 2 weeks, after this
+will go through diss from start. 
+
+##  Meeting 16 - 16th March 2021
+
+* Meeting Duration: 13:31-13:38
+
+### Discussion
+
+Visual inspection of recovered and original payloads in evaluation section is prone to bias as it is performed by me. Istead
+use something like "diff" command on linux to check difference between two images. For "improved, same, worse" section, 
+get external participation to evaluate visual degradation. (give them images and ask them to say if it has payload or not)

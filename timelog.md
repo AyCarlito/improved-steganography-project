@@ -397,13 +397,82 @@
 
 *1.5 Hours* - Rewrite of Detection tool. Explanation of detection cases. Only one figure added. 
 
-### 6 Feb 2021
+### 6 March 2021
 
-*1.5 Hours* going over code for four cases in detection tool. Removed redundant code. Moved plotly histogram creation to seprate function. Fixed known cover and stego case. updated argparse help command to show all cases that can be chosen.
-*0.5 Hours* Wrote up past meetings.
-*0.5 Hours* Writing up timelog. 
-*0.5 Hours* Added future work based on detection tool.
-*1 Hour* Rewrite of JPEG implementation.
+*1.5 Hours* - going over code for four cases in detection tool. Removed redundant code. Moved plotly histogram creation to seprate function. Fixed known cover and stego case. updated argparse help command to show all cases that can be chosen.
+*0.5 Hours* - Wrote up past meetings.
+*0.5 Hours* - Writing up timelog. 
+*0.5 Hours* - Added future work based on detection tool.
+*1 Hour* - Rewrite of JPEG implementation.
+
+### 7 March 2021
+
+*0.5 Hour* - Wrote rough outline of JPEG steganography evaluation
+*1 Hour* - Rewrite of JPEG steganography implementation. Discussed problems with OpenCV
+*0.5 Hour* - Write up implementation of run length encoding
+
+## Week 8
+
+### 8 March 2021
+
+*0.5 Hour* - Added figures for JPEG Steganography evaluation section. 
+*0.5 Hour* - Implementation of MSE and PSNR calculaitons. Takes uncompressed and compressed images as parameters. Will be used in JPEG compression evaluation section.
+
+
+### 10 March 2021
+
+*1 Hour* - Added metric section to JPEG compression evaluation
+*1 Hour* - Metrics code now calculated MSE and PSNR for all images in test_images directory.
+
+
+### 11 March 2021
+
+*1.5 Hours* - Started rewrite of evaluation section. Including, summary of chapter, methodolofy and test images section. Added a meeting the requirements section.
+
+### 12 March 2021
+
+*1.5 Hours* - Rewrite of standard algorithm evaluation section. Removed repeated figures. Instead now shoing stego and recovered payload for each part. Example command usage is shown once, rather than every time.
+
+
+### 13 March 2021
+
+*1 Hour* - Started rewrite of modified algorithm evaluation section.
+*0.5 Hour* - Found issue with variable compleixty. High level of degradation, can be fixed by by changing which butplanes are mapped to which threshold. However this renders
+payload unrecoverable in some instances.
+*0.5 Hour* - Reformat of tables. Added centering, captions and horizontal lines. 
+
+### 14 March 2021
+
+*0.5 Hour* - Created table for meeting the requirements section.
+*0.5 Hour* - Added unit testing section in evaluation
+*1 Hour* - Rewrite of comparison of standard and improved BPCS section in evaluation.
+
+## Week 9
+
+### 17 March 2021
+
+*1 Hour* - Documentation of BPCS Encode
+*0.5 Hour* - Documentation of BPCS decode.
+*0.5 Hour* - BPCS encode and encode usage documentation.
+
+### 18 March 2021
+
+*0.5 Hour* - Fixed issue with csv file during JPEG compression. Windows adds an extra carriage return; this was fixed using the "newline=''" flag when writing and appending csv file. Additionally,
+fixed argparse terminiology -> swapped vessel for cover and secret for payload.
+*1.5 Hour* - Documentation of JPEG Decode/Evaluate/LSB_Steganography/ZigZag.
+
+### 19 March 2021
+
+*0.5 Hour* - Documenation of Detection tool.
+
+*0.5 Hour* - Update meetings, plan and timelog. 
+
+
+
+
+
+
+
 
 
 
