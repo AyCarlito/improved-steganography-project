@@ -121,6 +121,20 @@ Detection tool implements four detection cases where any one can be selected by 
 These are: known cover and stego, known payload and stego, known algorithm and stego, stego
 object only.
 
+Usage
+*****
+
+While in the steganography directory, usage of the tool is as follows:
+
+*Windows*
+
+``py -m detection_tool.stegdetect -m <detection_case> -c <path_to_cover_image> -s <path_to_stego_image> -p <path_to_payload_image> -a <embedding_algorithm>``
+
+*Linux*
+
+``python3 detection_tool.stegdetect -m <detection_case> -c <path_to_cover_image> -s <path_to_stego_image> -p <path_to_payload_image> -a <embedding_algorithm>``
+
+
 stegdetect.py
 *************
 .. automodule:: detection_tool.stegdetect
