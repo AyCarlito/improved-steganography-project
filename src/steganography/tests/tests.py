@@ -4,7 +4,7 @@ import os
 import numpy as np
 sys.path.append("..")
 
-from BPCS_Steganography import encode
+from bpcs_tool import encode
 
 vessel_path = "../test_images/vessel.bmp"
 secret_path = "../test_images/secret.bmp"
@@ -38,7 +38,6 @@ def test_Pmode_image_has_single_channel():
 def test_colour_image_has_three_channels():
     test_array = encode.get_file(colour_path)
     assert(len(test_array)) == 3
-
 
 def test_gray_coding():
     test_matrix = np.array([[1,2,3], [4,5,6]])

@@ -463,8 +463,8 @@ fixed argparse terminiology -> swapped vessel for cover and secret for payload.
 
 ### 19 March 2021
 
-*0.5 Hour* - Documenation of Detection tool.
-
+*0.5 Hour* - Documentation of Detection tool.
+*0.5 Hour* - Documentation of JPEG encode.
 *0.5 Hour* - Update meetings, plan and timelog. 
 
 

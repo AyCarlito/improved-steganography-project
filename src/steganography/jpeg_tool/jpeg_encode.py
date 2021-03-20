@@ -89,6 +89,8 @@ def get_file(name):
 def create_image(matrix, name):
     """**Write image to disk**
 
+        
+
     Args:
         matrix ([type]): [description]
         name ([type]): [description]
@@ -97,12 +99,36 @@ def create_image(matrix, name):
 
 
 def clean_values(matrix):
+    """**Clean pixel values outside minimum or maximum value**
+
+        Compression process can result in negative values of values greater than 255. Since
+        these are not valid values we change them. Less than 0 -> 0. Greater than 255 -> 255.
+
+    Args:
+        matrix ([type]): Non-cleaned pixel values of image
+
+    Returns:
+        [type]: Cleaned pixel values of image
+    """
     matrix[matrix>255] = 255
     matrix[matrix<0] = 0
     return matrix
 
 
 def split_into_blocks(img, qtmatrix):
+    """**Lossy compression process**
+
+        Write image dimensions to csv. Loop through each 8x8 block. Perform DCT on block.
+        Normalise with quantisation matrix. Reorder coefficients using zigzag encoding.
+        Create RLE encoding. Reshape back into 8x8 and add to compressed array.
+
+    Args:
+        img ([type]): [description]
+        qtmatrix (ndarray): Quantization matrix
+
+    Returns:
+        ndarray: Compressed array.
+    """
     compressed = np.zeros((img.shape[0], img.shape[1]))
     image_size_to_csv(img.shape[0],img.shape[1])
     compressed[0:compressed.shape[0], 0:compressed.shape[1]] = img[0:img.shape[0],0:img.shape[1]]
@@ -117,17 +143,42 @@ def split_into_blocks(img, qtmatrix):
     return compressed
 
 def image_size_to_csv(height, width):
+    """**Height and width of image as first row in CSV**
+
+    Args:
+        height (int): Height of image
+        width (int): Width of image
+    """
     with open("image.csv", "w", newline='') as f:
         wr = csv.writer(f)
         wr.writerow([height, width])
 
 def create_run_length_encoding(block):
+    """**Create RLE for a block**
+
+        Create list of lists where each list is a value and count of consecutive occurences.
+
+    Args:
+        block ([ndarray]): 8x8 block of normalised coefficients
+    """
     rle = [[i, len([*group])] for i, group in groupby(block)]
     with open("image.csv", "a", newline='') as f:
         wr = csv.writer(f)
         wr.writerow(rle)
 
 def run_length_to_image(qtmatrix):
+    """**Create compressed array from RLE**
+
+        Open CSV file. Read height and width first, (first row). Take each subsequent row 
+        and create 8x8 block from it and add it to list. Resulting list is reshaped into 
+        original dimensions by setting each block as an 8x8 array slice in compressed array. 
+
+    Args:
+        qtmatrix (ndarray): Quantization matrix
+
+    Returns:
+        ndarray: Array of compressed image
+    """
     block_arr = []
     height_and_width_found = False
     with open("image.csv", "r") as f:
@@ -150,6 +201,18 @@ def run_length_to_image(qtmatrix):
     return compressed_arr
 
 def construct_block(row, qtmatrix):
+    """**Create block from RLE**
+
+    take row, loop through each list in row, convert and add to 1D array. Use zigzag
+    encoding to create 8x8. Normalise and perform IDCT to create block.
+
+    Args:
+        row (String): Row from csv. Lists of lists as string.
+        qtmatrix (ndarray): Quantization matrix
+
+    Returns:
+        ndarray: Contructed 8x8 block
+    """
     block = []
     for each_rle in row:
         each_rle_as_list = ast.literal_eval(each_rle)
@@ -161,12 +224,34 @@ def construct_block(row, qtmatrix):
     return compressed_image_block
 
 def handle_channel(img, quantization_matrix):
+    """*Helper function for handling single channel**
+
+    Call lossy compression function with channel and quantization matrix. Create
+    compressed area from RLE. Delete CSV file.
+
+    Args:
+        img ([type]): [description]
+        quantization_matrix (ndarray): Quantization matrix
+
+    Returns:
+        ndarray: Compressed channel
+    """
     split_into_blocks(img, quantization_matrix)
     compressed_arr = run_length_to_image(quantization_matrix)
     remove_rle_file()
     return compressed_arr
 
 def handle_grayscale(vessel, secret, qtmatrix, mode):
+    """**Compress 8-bit colour image**
+
+    Compress and then embed if necessary. 
+
+    Args:
+        vessel ([type]): [description]
+        secret ([type]): [description]
+        qtmatrix (ndarray): Quantization matrix
+        mode (String): Algorithm chosen by user
+    """
     compressed_arr = clean_values(handle_channel(vessel, qtmatrix))
     if mode=="TLSB":
         compressed_arr = lsb_jpeg.lsb_embed_secret(secret, np.uint8(compressed_arr))
@@ -175,6 +260,20 @@ def handle_grayscale(vessel, secret, qtmatrix, mode):
     create_image(compressed_arr, "compressed")
     
 def handle_colour(vessel, secret, channel_matrix, mode):
+    """**Compress 24-bit colour image**
+
+    Loop through each channel in image and call handle_channel helper. If embedding, embed
+    single channel in singel channel if two 8-bit colour images. Embed single channel in Y 
+    channel if 8-bit colour payload and 24-bit colour cover. Embed each channel in each channel
+    if two 24-bit colour images. Convert from YCrCb to BGR. Clean values, and create image. 
+    Remove RLE file.
+
+    Args:
+        vessel ([type]): [description]
+        secret ([type]): [description]
+        channel_matrix (dict): Dictionary mapping channel to quantization matrices.
+        mode (String): Algorithm chosen by user
+    """
     for i in range(3):
         vessel[:,:,i] = handle_channel(vessel[:,:,i], channel_matrix[i])
     if mode=="TLSB":
@@ -188,6 +287,18 @@ def handle_colour(vessel, secret, channel_matrix, mode):
     remove_rle_file()
 
 def embeddable(vessel, secret):
+    """**Check if payload can be embedded in cover**
+
+    Maximum capacity using LSB is 1/8 (12.5%). Equivalent to total pixels in cover divided by
+    8. If payload pixels <= cover pixels / 8, then we can embed.
+
+    Args:
+        vessel (ndarray): Numpy array of cover image
+        secret ([type]): Numpy array of payload image
+
+    Returns:
+        bool: True of False value indicating if payload can be embedded.
+    """
     if((secret.shape[0]*secret.shape[1])>(vessel.shape[0]*vessel.shape[1]/8)):
         print("Insufficient number of vessel bits")
         return False
@@ -197,6 +308,13 @@ def embeddable(vessel, secret):
     return True
 
 def main():
+    """**Driver code of JPEG encode**
+
+        Remove existing RLE csv file if it exists. Read in files. Quit program if trying to
+        embed and payload is not embeddable. If vessel is 8-bit colour call handle grayscale
+        helper otherwise call handle_colour helper. 
+
+    """
 
     remove_rle_file()
 
@@ -206,8 +324,9 @@ def main():
     secret = get_file(args.payload)
     mode = args.mode
 
-    if not (embeddable(vessel, secret)):
-        quit()
+    if mode!="Compress":
+        if not (embeddable(vessel, secret)):
+            quit()
 
     if len(vessel.shape) == 2:
         handle_grayscale(vessel, secret, LUMINANCE_MATRIX, mode)
