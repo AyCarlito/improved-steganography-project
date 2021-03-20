@@ -116,8 +116,13 @@ jpeg_evaluate.py
 Detection Tool
 ##############
 
-Documentation of Detection Tool
+The detection tool is used to determine the presence of a hidden payload within a stego object. 
+Detection tool implements four detection cases where any one can be selected by the user.
+These are: known cover and stego, known payload and stego, known algorithm and stego, stego
+object only.
 
 stegdetect.py
 *************
+.. automodule:: detection_tool.stegdetect
+   :members:
 

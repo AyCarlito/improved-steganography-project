@@ -17,6 +17,15 @@ from bpcs_tool import encode, decode
 COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}}
 
 def get_arguments():
+    """**Command line argument parsing**
+
+        Use of the argparse library to parse user input in the command line application. 
+        Mode is a positional argument meaning it has to be provided. Others are optional
+        so any can be specified. Both mode and algorithm are restricted choice.
+    
+    Returns:
+        Namespace: Parsed user arguments.
+    """
     parser = argparse.ArgumentParser(description="BPCS StegDectect Tool")
     parser.add_argument("-m", "--mode", choices=[0,1,2,3], type=int, help="Mode. 0-Known Cover and Stego. 1-Known Algorithm and Stego. 2-Known Payload and Stego. 3-Stego Only")
     parser.add_argument("-c", "--cover", nargs="?", type=str, help="Cover Image")
@@ -27,12 +36,31 @@ def get_arguments():
     return args
 
 def complexity(data):
+    """**Get complexities of every block**
+
+        Creates a list of complexities of each block using bpcs_encode get_complexity function. 
+
+    Args:
+        data (list): List of 8x8 blocks
+
+    Returns:
+        list: List of complexities for each block
+    """
     complexities = []
     for block in data:
         complexities.append(encode.get_complexity(block))
     return complexities
 
 def known_cover_and_stego(args):
+    """**Detection case for known cover object and stego object**
+
+        Reads in cover and stego images. Uses np.array_equal to check if single channel 
+        from cover is the same as single channel in stego. If equal then we have hidden 
+        payload, otherwise no hidden payload.
+
+    Args:
+        args (Namespace): Parsed user arguments - name of cover and name of stego.
+    """
     cover_arr = encode.get_file(args.cover)[0]
     stego_arr = encode.get_file(args.stego)[0]
     if (np.array_equal(cover_arr, stego_arr)):
@@ -42,6 +70,14 @@ def known_cover_and_stego(args):
     return
    
 def known_payload_and_stego(args):
+    """**Detection case for known payload object and stego object**
+
+        Reads in payload and cover images. Gets bitplane arrays and splits into blocks.
+        Check if single 8x8 block from payload exists in stego.
+
+    Args:
+        args (Namespace): Parsed user arguments - name of payload and name of stego.
+    """
     payload_arr = encode.get_file(args.payload)[0]
     stego_arr = encode.get_file(args.stego)[0]
 
@@ -63,6 +99,18 @@ def known_payload_and_stego(args):
 
 
 def known_algorithm_and_stego(args):
+    """**Detection case for known algorithm and stego object**
+
+        Read in stego image and convert each channel to gray coding. Get bitplane array
+        and split into blocks using bpcs_decode function. Extract metadata. Recall,
+        meta data is (total_blocks, height, width). Check if recovered height and
+        width are divisible by 8. If divisible then hidden payload.
+
+
+    Args:
+        args (Namespace): Parsed user arguments - embedding algorithm  and name of stego.
+    """
+
     stego_arr = decode.get_file(args.stego)
     stego_arr = [decode.convert_to_gray_coding(channel) for channel in stego_arr][0]
     stego_bitplane_arr = decode.get_bitplane_arr(stego_arr)
@@ -75,6 +123,15 @@ def known_algorithm_and_stego(args):
     return
 
 def stego_only(args):
+    """**Detection case for stego object only**
+
+        Read in stego image, get bitplane array, split into blocks. Get list of complexities 
+        for each block in stego. Find max complexity in this list. If max is greater than
+        chosen threshold of 0.9 then hidden payload, otherwise no hidden payload.
+
+    Args:
+        args (Namespace): Parsed user arguments - name of stego.
+    """
     stego_arr = encode.get_file(args.stego)
     stego_bitplane_arr = encode.get_bitplane_arr(stego_arr[0])
     stego_data = encode.split_into_blocks(stego_bitplane_arr, 0)
@@ -87,6 +144,13 @@ def stego_only(args):
     create_histogram(stego_complexities)
 
 def create_histogram(stego_complexities):
+    """Graph of block complexity histogram**
+
+        Uses plotly library to plot the histogram of block complexities. 
+        
+    Args:
+        stego_complexities (list): List of block complexities
+    """
     chunk = len(stego_complexities)//8
     bitplane_complexities = []
     group_labels = ["Bitplane 7", "Bitplane 6", "Bitplane 5", "Bitplane 4", "Bitplane 3", "Bitplane 2", "Bitplane 1", "Bitplane 0"]
@@ -98,6 +162,11 @@ def create_histogram(stego_complexities):
     return
 
 def main():
+    """**Driver code of Detection tool**
+
+        Parse user arguments. Call the relevant function (detection case) based on 
+        chosen mode. 
+    """
     args = get_arguments()
     mode = args.mode
     
