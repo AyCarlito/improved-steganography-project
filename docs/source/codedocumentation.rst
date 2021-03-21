@@ -140,3 +140,26 @@ stegdetect.py
 .. automodule:: detection_tool.stegdetect
    :members:
 
+Payload Comparison
+##################
+
+This tool was created and used for the evaluation. Takes the original and recovered payloads as parameters and compares them. This was implemented
+to eliminate the bias that could be present during a visual inspection.
+
+Usage
+*****
+
+While in the steganography directory, usage of the tool is as follows:
+
+*Windows*
+
+``py -m payload_comparison_tool.payload_recovery_test -o <path_to_original_payload> -r <path_to_recovered_payload>``
+
+*Linux*
+
+``python3 -m payload_comparison_tool.payload_recovery_test -o <path_to_original_payload> -r <path_to_recovered_payload>``
+
+payload_recovery_test.py
+************************
+.. automodule:: payload_comparison_tool.payload_recovery_test
+   :members:
