@@ -115,11 +115,16 @@ def known_algorithm_and_stego(args):
     stego_arr = [decode.convert_to_gray_coding(channel) for channel in stego_arr][0]
     stego_bitplane_arr = decode.get_bitplane_arr(stego_arr)
     data = decode.split_into_blocks(stego_bitplane_arr, COMPLEXITIES[args.algorithm])
-    meta_data = decode.extract_meta_data(data, stego_arr)
-    if(meta_data[1]%8==0) and (meta_data[2]%8==0):
-        print("Hidden payload")
-    else:
+    try:
+        meta_data = decode.extract_meta_data(data, stego_arr)
+    except MemoryError:
         print("No Hidden payload")
+        return
+    print("Hidden payload")
+    # if(meta_data[1]%8==0) and (meta_data[2]%8==0):
+    #     print("Hidden payload")
+    # else:
+    #     print("No Hidden payload")
     return
 
 def stego_only(args):
