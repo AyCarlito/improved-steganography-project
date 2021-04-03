@@ -11,6 +11,7 @@ import numpy as np
 import subprocess
 import os
 import math
+import platform
 import plotly.graph_objects as go
 
 
@@ -168,15 +169,22 @@ def main():
         handle_single(args)
     else:
         image_files = []
-        dir = "../test_images"
+        dir = "test_images"
         for image in os.listdir(dir):
             if image.endswith(".bmp") or image.endswith(".jpg"):
                 full_path = os.path.join(dir, image)
-                subprocess.call(["python", "jpeg_encode.py", "-v", full_path, "-s", full_path, "-m", "Compress"])
+                if platform.system() == "Windows":
+                    subprocess.call(["py", "-m", "jpeg_tool.jpeg_encode", "-v", full_path, "-s", full_path, "-m", "Compress"])
+                else:
+                    subprocess.call(["python3", "-m", "jpeg_tool.jpeg_encode", "-v", full_path, "-s", full_path, "-m", "Compress"])
                 mse, psnr = handle_single(full_path, "compressed.jpeg")
                 image_list.append(image)
                 mse_list.append(mse)
                 psnr_list.append(psnr)
+    
+    image_list.append("Average")
+    mse_list.append(sum(mse_list) / len(mse_list))
+    psnr_list.append(sum(psnr_list) / len(psnr_list))
     create_figure(image_list, mse_list, psnr_list)
 
     
