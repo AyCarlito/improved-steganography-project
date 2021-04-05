@@ -10,7 +10,7 @@ import os
 import argparse
 import random
 
-COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}}
+COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.45}}
 
 bitplanes = [7,6,5,4,3,2,1,0]
 #Gray Coding Functions Sourced from https://www.geeksforgeeks.org/decimal-equivalent-gray-code-inverse/# 
@@ -349,9 +349,9 @@ def main():
     
     stego_arr = get_file(args.s)
     stego_arr = [convert_to_gray_coding(channel) for channel in stego_arr]
-    complexities = COMPLEXITIES[args.a]
-    # if args.a == "improved":
-    #     random.Random(stego_arr[0].shape[0]).shuffle(bitplanes)
+    complexities = COMPLEXITIES["standard"]
+    if args.a == "improved":
+        random.Random(stego_arr[0].shape[0]).shuffle(bitplanes)
 
     if len(stego_arr)==1:
         secret_payload_arr = convert_from_gray_coding(extract_single_channel_from_single_channel(stego_arr[0], complexities))

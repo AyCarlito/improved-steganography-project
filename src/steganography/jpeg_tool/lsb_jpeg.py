@@ -30,6 +30,8 @@ def lsb_embed_secret(secret, vessel):
     """
     index = 0
 
+    height = vessel.shape[0]
+    width = vessel.shape[1]
     secret_height = secret.shape[0]
     secret_width = secret.shape[1]
    
@@ -174,7 +176,6 @@ def random_lsb_decode_secret(stego_name):
     random.seed(stego.shape[0])
     stego = stego.flatten()
     secret = []
-    
     height = stego[0]*8
     width = stego[8]*8
 

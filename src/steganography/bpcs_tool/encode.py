@@ -10,7 +10,7 @@ import os
 import argparse
 import random
 
-COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}}
+COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.45}}
 
 bitplanes = [7,6,5,4,3,2,1,0]
 #Gray Coding Functions Sourced from https://www.geeksforgeeks.org/decimal-equivalent-gray-code-inverse/# 
@@ -359,9 +359,9 @@ def main():
     vessel_arr = [convert_to_gray_coding(channel) for channel in vessel_arr]
     secret_arr = [convert_to_gray_coding(channel) for channel in secret_arr]
 
-    complexities = COMPLEXITIES[args.a]
-    # if args.a == "improved":
-    #     random.Random(vessel_arr[0].shape[0]).shuffle(bitplanes)
+    complexities = COMPLEXITIES["standard"]
+    if args.a == "improved":
+        random.Random(vessel_arr[0].shape[0]).shuffle(bitplanes)
 
     if len(vessel_arr)==1 and len(secret_arr)==1:
         stego_array = embed_single_channel_in_single_channel(vessel_arr[0], secret_arr[0], complexities)
