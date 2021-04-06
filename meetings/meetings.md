@@ -183,3 +183,47 @@ will go through diss from start.
 Visual inspection of recovered and original payloads in evaluation section is prone to bias as it is performed by me. Istead
 use something like "diff" command on linux to check difference between two images. For "improved, same, worse" section, 
 get external participation to evaluate visual degradation. (give them images and ask them to say if it has payload or not)
+
+## Meeting 17 - 23rd March 2021
+
+* Meeting Duration: 13:30-13:49
+
+### Discussion
+
+Have performed evaluation with external participants and the procedure used. Recieved feedback on dissertation.
+
+Fundamental concepts - Computers don't all represent images in the same way. Describe image as array of values. Be clearer about what 
+bitplanes are. Change example black images in LSB section to  colour. Images don't have complexity measure, blocks do.
+
+JPEG - Use subsub headings. 
+
+RLE - RLE is lossless compression. Can discuss other examples like GIF. 
+
+Analysis - Change to functional and non functional requirements.
+
+Design - Move modifications to subheading under BPCS tool. Consider figure size. More detail needed about detection cases design.
+
+Implementation - Increase gantt chart size. Test driven development diagram is irrelevant. Too many code blocks. Reduce number to only have interesting sections. Maintanability section is redundant.
+
+Next week will recieve feedback on evaluation and conclusion. 
+
+## Meeting 18 - 30th March 2021
+
+* Meeting Duration: 13:33-13:42
+
+### Discussion
+
+Will have one final meeting before dissertation submission. Showed sphinx documentation.
+
+Evaluation - Good test bank image set. More discussion needed on strategy used by participants in visual detection evaluation. Mention vessel.bmp (old image) and
+prtiicpants confusing wear and tear for signs of embedding. JPEG results are good. Conclusion fine.
+
+Will send revised dissertation with all required changes in advance of next meeting.
+
+
+
+
+
+
+
+
