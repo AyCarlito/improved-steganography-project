@@ -253,8 +253,8 @@ def handle_grayscale(vessel, secret, qtmatrix, mode):
         mode (String): Algorithm chosen by user
     """
     compressed_arr = clean_values(handle_channel(vessel, qtmatrix))
-    if mode=="TLSB":
-        compressed_arr = lsb_jpeg.lsb_embed_secret(secret, np.uint8(compressed_arr))
+    if mode=="TLSB" or mode=="LSB":
+        compressed_arr = lsb_jpeg.lsb_embed_secret(secret, np.uint8(compressed_arr), mode)
     elif mode=="TLSBRandom":
         compressed_arr = lsb_jpeg.random_lsb_embed_secret(secret, np.uint8(compressed_arr))
     create_image(compressed_arr, "compressed")
@@ -276,12 +276,12 @@ def handle_colour(vessel, secret, channel_matrix, mode):
     """
     for i in range(3):
         vessel[:,:,i] = handle_channel(vessel[:,:,i], channel_matrix[i])
-    if mode=="TLSB":
+    if mode=="TLSB" or mode=="LSB":
         if len(secret.shape) == 2:
-            vessel[:,:,0] = lsb_jpeg.lsb_embed_secret(secret, np.uint8(vessel[:,:,0]))
+            vessel[:,:,0] = lsb_jpeg.lsb_embed_secret(secret, np.uint8(vessel[:,:,0]), mode)
         else:
             for i in range(3):
-                vessel[:,:,i] = lsb_jpeg.lsb_embed_secret(secret[:,:,i], np.uint8(vessel[:,:,i]))
+                vessel[:,:,i] = lsb_jpeg.lsb_embed_secret(secret[:,:,i], np.uint8(vessel[:,:,i]), mode)
     compressed_arr = cv2.cvtColor(vessel, cv2.COLOR_YCrCb2BGR)
     create_image(clean_values(compressed_arr), "compressed")
     remove_rle_file()

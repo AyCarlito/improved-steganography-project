@@ -20,7 +20,7 @@ def get_arguments():
     """
     parser = argparse.ArgumentParser(description="JPEG Decoding Tool")
     parser.add_argument("-s", "--stego", type=str, help="Stego Image")
-    parser.add_argument("-m", "--mode", type=str, choices=["TLSB", "TLSBRandom"], help="Extraction Algorithm")
+    parser.add_argument("-m", "--mode", type=str, choices=["LSB", "TLSB", "TLSBRandom"], help="Extraction Algorithm")
     args = parser.parse_args()
     return args
 
@@ -36,11 +36,11 @@ def recover(stego_name, algorithm):
         stego_name (String): File name of stego image
         algorithm (String): Algorithm to be used during extraction
     """
-    call  = {"TLSB": lsb_jpeg.lsb_decode_secret, "TLSBRandom": lsb_jpeg.random_lsb_decode_secret}
-    recovered = np.asarray(call[algorithm](stego_name))
+    call  = {"LSB": lsb_jpeg.lsb_decode_secret, "TLSB": lsb_jpeg.lsb_decode_secret, "TLSBRandom": lsb_jpeg.random_lsb_decode_secret}
+    recovered = np.asarray(call[algorithm](stego_name, algorithm))
     if recovered.shape[0] == 1:
         recovered = recovered[0]
-    jpeg_encode.create_image(recovered, "payload")
+    jpeg_encode.create_image(recovered, "extracted")
 
 def main():
     """**Driver Code**

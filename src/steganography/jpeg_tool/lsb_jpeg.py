@@ -9,8 +9,8 @@ import numpy as np
 import random
 
 
-def lsb_embed_secret(secret, vessel):
-    """**Embed payload using TLSB**
+def lsb_embed_secret(secret, vessel, alg):
+    """**Embed payload using LSB or TLSB**
 
     Payload height and payload width are the first things embedded.
 
@@ -37,7 +37,6 @@ def lsb_embed_secret(secret, vessel):
    
     secret = secret.flatten()
     vessel = vessel.flatten()
-
     secret[0] = secret_height/8
     secret[1] = secret_width/8
     for secret_pixel in secret:
@@ -45,17 +44,20 @@ def lsb_embed_secret(secret, vessel):
         vessel_selection = vessel[index*8:index*8+8]
         for i, vessel_pixel in enumerate(vessel_selection):
             vessel_pixel_bin_repr = np.unpackbits(vessel_pixel)
-            vessel_pixel_bin_repr[-1] = 1
-            vessel_pixel_bin_repr[-2] = 0
-            vessel_pixel_bin_repr[-3] = secret_bin_repr[i]
+            if alg=="LSB":
+                vessel_pixel_bin_repr[-1] = secret_bin_repr[i]
+            elif alg=="TLSB":
+                vessel_pixel_bin_repr[-1] = 1
+                vessel_pixel_bin_repr[-2] = 0
+                vessel_pixel_bin_repr[-3] = secret_bin_repr[i]
             vessel_pixel = np.packbits(vessel_pixel_bin_repr)
             vessel_selection[i] = vessel_pixel
         vessel[index*8:index*8+8] = vessel_selection
         index+=1
     return vessel.reshape((height,width))
 
-def lsb_decode_secret(stego_name):
-    """**Extract payload using TLSB**
+def lsb_decode_secret(stego_name, algorithm):
+    """**Extract payload using LSB or TLSB**
     
         Call decoder helper for each channel in stego. single channel will mean single call.
         Three channels -> loop through with try and except. We use try and except as there
@@ -71,18 +73,18 @@ def lsb_decode_secret(stego_name):
     stego = jpeg_encode.get_file("%s" % stego_name)
     if len(stego.shape)==2:
         stego = stego.flatten()
-        decoded = lsb_decode_helper(stego)
+        decoded = lsb_decode_helper(stego, algorithm)
     else:
         for i in range(3):
             stego_channel = stego[:,:,i].flatten()
             try:
-                decoded = lsb_decode_helper(stego_channel)
+                decoded = lsb_decode_helper(stego_channel, algorithm)
             except ValueError as e:
                 pass
     return decoded
     
 
-def lsb_decode_helper(stego):
+def lsb_decode_helper(stego, algorithm):
     """**Helper function for LSB extraction**
 
         For every 8 pixel selection in stego. Loop through each pixel, convert to binary and 
@@ -102,7 +104,10 @@ def lsb_decode_helper(stego):
         secret_pixel = []
         for i, stego_pixel in enumerate(stego_selection):
             stego_pixel_bin_repr = np.unpackbits(stego_pixel)
-            secret_pixel.append(stego_pixel_bin_repr[-3]) 
+            if algorithm=="LSB":
+                secret_pixel.append(stego_pixel_bin_repr[-1]) 
+            elif algorithm=="TLSB":
+                secret_pixel.append(stego_pixel_bin_repr[-3]) 
         secret.append(np.packbits(secret_pixel)[0])
         index+=1
     height = secret[0]*8
@@ -157,7 +162,7 @@ def random_lsb_embed_secret(secret, vessel):
     vessel[8] = (secret_width/8)
     return vessel.reshape((height,width))
 
-def random_lsb_decode_secret(stego_name):
+def random_lsb_decode_secret(stego_name, algorithm):
     """**Extract payload using TLSBRandom**
 
         Read in stego. Use height as seed. Flatten array. Recretae the embedding order.
