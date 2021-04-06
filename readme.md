@@ -15,6 +15,8 @@ Python Version: 3.85 or greater
 
 Pip Version: 20.0.2 or greater
 
+Opeating System - Windows 10 or Linux Ubuntu
+
 ## Installation
 
 Clone repository to a directory of your choice. The command for this is as follows:
