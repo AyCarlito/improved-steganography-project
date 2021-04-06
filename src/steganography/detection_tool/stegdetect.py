@@ -31,7 +31,7 @@ def get_arguments():
     parser.add_argument("-c", "--cover", nargs="?", type=str, help="Cover Image")
     parser.add_argument("-s", "--stego", nargs="?", type=str, help="Stego Image")
     parser.add_argument("-p", "--payload", nargs="?", type=str, help="Payload")
-    parser.add_argument("-a", "--algorithm", choices=["standard", "improved"], nargs="?", type=str, help="Algorithm used in embedding")
+    parser.add_argument("-a", "--algorithm", choices=["standard", "improved", "variable_complexity", "RBEO"], nargs="?", type=str, help="Algorithm used in embedding")
     parser.add_argument("-g", "--graph", choices=["yes", "no"], nargs="?", type=str, help="Option to display complexity histogram when using stego object only detection case")
     args = parser.parse_args()
     return args
@@ -127,7 +127,11 @@ def known_algorithm_and_stego(args):
     stego_arr = decode.get_file(args.stego)
     stego_arr = [decode.convert_to_gray_coding(channel) for channel in stego_arr][0]
     stego_bitplane_arr = decode.get_bitplane_arr(stego_arr)
-    data = decode.split_into_blocks(stego_bitplane_arr, COMPLEXITIES[args.algorithm])
+
+    complexities = COMPLEXITIES["standard"]
+    if args.algorithm == "improved" or args.algorithm=="variable_complexity":
+        complexities = COMPLEXITIES["improved"]
+    data = decode.split_into_blocks(stego_bitplane_arr, complexities)
     try:
         meta_data = decode.extract_meta_data(data, stego_arr)
     except MemoryError:
