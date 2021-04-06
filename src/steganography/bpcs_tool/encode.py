@@ -90,7 +90,8 @@ def get_arguments():
     parser.add_argument("v", type=str, help="Cover Image")
     parser.add_argument("s", type=str, help="Payload Image")
     parser.add_argument("a", choices=["standard", "improved"], type=str, help="Algorithm. Standard or Improved")
-
+    parser.add_argument("-m1", "--variable_complexity", choices=["yes", "no"], nargs="?", type=str, help="Option to use variable complexity modification on its own")
+    parser.add_argument("-m2", "--rbeo", choices=["yes", "no"], nargs="?", type=str, help="Option to use random bitplane embedding order modification on its own")
     args = parser.parse_args()
     return args
 
@@ -360,8 +361,15 @@ def main():
     secret_arr = [convert_to_gray_coding(channel) for channel in secret_arr]
 
     complexities = COMPLEXITIES["standard"]
-    if args.a == "improved":
+
+    if (args.a == "improved" and args.variable_complexity and not args.rbeo):
+        complexities = COMPLEXITIES["improved"]
+    elif (args.a == "improved" and not args.variable_complexity and args.rbeo):
         random.Random(vessel_arr[0].shape[0]).shuffle(bitplanes)
+    else:
+        complexities = COMPLEXITIES["improved"]
+        random.Random(vessel_arr[0].shape[0]).shuffle(bitplanes)
+        
 
     if len(vessel_arr)==1 and len(secret_arr)==1:
         stego_array = embed_single_channel_in_single_channel(vessel_arr[0], secret_arr[0], complexities)

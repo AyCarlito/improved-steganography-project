@@ -70,7 +70,8 @@ def get_arguments():
     parser = argparse.ArgumentParser(description="BPCS Decoding tool")
     parser.add_argument("s", type=str, help="Stego Image")
     parser.add_argument("a", choices=["standard", "improved"], type=str, help="Algorithm. Standard or Improved")
-
+    parser.add_argument("-m1", "--variable_complexity", choices=["yes", "no"], nargs="?", type=str, help="Option to use variable complexity modification on its own")
+    parser.add_argument("-m2", "--rbeo", choices=["yes", "no"], nargs="?", type=str, help="Option to use random bitplane embedding order modification on its own")
     args = parser.parse_args()
     return args
 
@@ -349,8 +350,15 @@ def main():
     
     stego_arr = get_file(args.s)
     stego_arr = [convert_to_gray_coding(channel) for channel in stego_arr]
+    
     complexities = COMPLEXITIES["standard"]
-    if args.a == "improved":
+
+    if (args.a == "improved" and args.variable_complexity and not args.rbeo):
+        complexities = COMPLEXITIES["improved"]
+    elif (args.a == "improved" and not args.variable_complexity and args.rbeo):
+        random.Random(stego_arr[0].shape[0]).shuffle(bitplanes)
+    else:
+        complexities = COMPLEXITIES["improved"]
         random.Random(stego_arr[0].shape[0]).shuffle(bitplanes)
 
     if len(stego_arr)==1:

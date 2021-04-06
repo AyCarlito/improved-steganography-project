@@ -14,7 +14,7 @@ import plotly.figure_factory as ff
 from bpcs_tool import encode, decode
 
 
-COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.50}}
+COMPLEXITIES = {"standard":{0:0.3, 1:0.3, 2:0.3, 3:0.3, 4:0.3, 5:0.3, 6:0.3, 7:0.3}, "improved":{0:0.1, 1:0.2, 2:0.25, 3:0.30, 4:0.35, 5:0.40, 6:0.45, 7:0.45}}
 
 def get_arguments():
     """**Command line argument parsing**
@@ -32,6 +32,7 @@ def get_arguments():
     parser.add_argument("-s", "--stego", nargs="?", type=str, help="Stego Image")
     parser.add_argument("-p", "--payload", nargs="?", type=str, help="Payload")
     parser.add_argument("-a", "--algorithm", choices=["standard", "improved"], nargs="?", type=str, help="Algorithm used in embedding")
+    parser.add_argument("-g", "--graph", choices=["yes", "no"], nargs="?", type=str, help="Option to display complexity histogram when using stego object only detection case")
     args = parser.parse_args()
     return args
 
@@ -146,7 +147,8 @@ def stego_only(args):
         print("Hidden Payload")
     else:
         print("No Hidden Payload")
-    create_histogram(stego_complexities)
+    if (args.graph=="yes"):
+        create_histogram(stego_complexities)
 
 def create_histogram(stego_complexities):
     """Graph of block complexity histogram**
