@@ -467,6 +467,88 @@ fixed argparse terminiology -> swapped vessel for cover and secret for payload.
 *0.5 Hour* - Documentation of JPEG encode.
 *0.5 Hour* - Update meetings, plan and timelog. 
 
+### 20 March 2021
+
+*0.5 Hour* - Added payload comparison tool and documentation for it
+*0.5 Hour* - Changed how known algorithm and stego detection case works. Now checks for memoryerror
+*1 Hour* - Detection tool evaluation 
+*0.5 Hour* - Added figures to test images section and fixed figures in jpeg steganography section.
+
+### 21 March 2021
+*0.5 Hour* - rewrote unit testing and summary part of evaluation
+*0.5 hour* -  fixed figures in modified algorithm.
+*0.5 hour* - outlines visual detection section.
+*0.5 hour* - created google form and images to be used in external participant evaluation. 
+
+## Week 10
+
+### 22 March 2021
+
+*2 hours*- Carried out external participant evaluation
+*1 hour* - write up the visual detection section in evaluation.
+
+### 24 March 2021
+
+*0.5 hour* - added jpeg part to lit review
+*0.5 hour* - fixing of background section up to and including lsb embedding. Also fixed headings of jpeg section in background.
+
+### 25 March 2021
+
+*0.5 Hour* - Rewrite BPCS embedding section of background
+*1.5 Hour* - rewrite of jpeg section of background. Including added figures of zigzag encoding and quantisation tables.
+
+
+### 26 March 2021
+
+*1 Hour* - Rewrite of Analysis section. Change requirements to be split into functional and nonfunctional. Also added description of MoSCoW.
+*1 Hour* - Rewrite of design. Added extra description of detection cases. Moved modifications to subheadings of bpcs tool.
+
+
+### 27 March 2021
+
+*1 Hour* - Rewrite version control. Development methodology, issue tracking. Took out figure of test driven development.
+*1.5 hour* - rewrite libraries and language.
+*0.5 hour* - rewrite user interface section. Maintainability section removed completely and instead summarised in couple sentences and put in rewritten command line application section.
+
+### 28 March 2021
+
+*0.5 Hour* - BPCS tool implementation intro. Rewrite of how argparse is used.
+*0.5 Hour* - Removal of code block figures in BPCS tool implementation and addition of code listings.
+*1.5 Hours* - Further rewrite bpcs tool implementation. - includes pillow reading in images, gray coding conversion. Dictionary of complexity thresholds. Embedding order. And embedding steps and metadata. Also rewrote last paragraph on decoder. 
+
+## Week 11
+
+### 29 March 2021
+
+*2.5 Hours* - Rewrite JPEG tool implementation section.
+
+### 30 March 2021
+
+*2 Hour *- Rewrite detection tool implementation section.
+*1 Hour* - Rewrite evaluation sections unit testing, experiment methodology and test images.
+
+### 1 April 2021
+
+3 Hours - Rewrite visual detection and digital detection section of algorithm comparison in evaluation.
+
+### 2 April 2021
+
+*3 Hours* - Rewrite JPEG compression section
+
+### 4 April 2021
+
+*3 Hours* - Rewrite JPEG steganography
+*3 Hours* - Rewrite conclusion
+
+## Final Week 
+
+### 5 April 2021
+
+*2 Hours* - Created data folder and added evaluation images
+*0.5 Hour* - Rough abstract written
+*0.5 Hour* - Can now select which modification to use in bpcs tool
+*0.5 Hour* - Implementation of known payload case
+
 
 
 
