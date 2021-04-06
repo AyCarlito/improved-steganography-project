@@ -16,10 +16,10 @@ Week-by-week plan for the whole project. Update this as you go along.
 * **Week 5** Improved Algorithm
 * **Week 6** Steganalysis Tool
 * **Week 7** Image Compression
-* **Week 8**
-* **Week 9**
-* **Week 10**
-* **Week 11 [PROJECT WEEK]**
+* **Week 8** Image Compression
+* **Week 9** JPEG Steganography
+* **Week 10** JPEG Steganography
+* **Week 11 [PROJECT WEEK]** Review of previously written code
 * **Week 12 [PROJECT WEEK]** Status report submitted.
 
 ## Winter break
