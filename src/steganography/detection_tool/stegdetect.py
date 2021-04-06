@@ -82,20 +82,32 @@ def known_payload_and_stego(args):
     payload_arr = encode.get_file(args.payload)[0]
     stego_arr = encode.get_file(args.stego)[0]
 
-    payload_bitplane_arr = encode.get_bitplane_arr(payload_arr)
-    stego_bitplane_arr = encode.get_bitplane_arr(stego_arr)
+    payload_bitplane_arr = encode.get_bitplane_arr(payload_arr)[:,:,0]
+    stego_bitplane_arr = encode.get_bitplane_arr(stego_arr)[:,:,0]
 
-    payload_blocks = encode.split_into_blocks(payload_bitplane_arr, 0)
-    stego_blocks = encode.split_into_blocks(stego_bitplane_arr, 0)
+    payload_blocks = []
+    for i in range(payload_bitplane_arr.shape[0]//8):
+            for j in range(payload_bitplane_arr.shape[1]//8):
+                payload_blocks.append(payload_bitplane_arr[i*8:i*8+8,j*8:j*8+8])
 
+    
+    stego_blocks = []
+    for i in range(stego_bitplane_arr.shape[0]//9):
+            for j in range(stego_bitplane_arr.shape[1]//9):
+                stego_blocks.append(stego_bitplane_arr[i*8:i*8+8,j*8:j*8+8])
+    
+    count = 0
+    payload_count =0 
     for payload_block in payload_blocks:
-        flat_payload = payload_block.flatten()
-        for block in stego_blocks:
-            flat_stego = block.flatten()
-            detected = flat_payload == flat_stego
-            if detected.all():
-                print("Yes")
-                return
+        for stego_block in stego_blocks:
+            if(payload_block == stego_block).all():
+                count+=1
+                break
+
+    if(count>(0.75*len(payload_blocks))):
+        print("Hidden payload")
+    else:
+        print("No hidden payload")
     return
 
 
