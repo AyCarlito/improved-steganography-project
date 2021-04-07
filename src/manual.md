@@ -222,5 +222,39 @@ Successful extraction will produce the recovered payload `extracted.jpeg` in the
 
 Compressed images can be evaluated to produce metrics like Mean Square Error and peak-signal to noise ratio. We can visualise this through a bar chart.
 
+Help information can viewed at any time. This will indicate how to use the application:
 
+`py -m jpeg_tool.jpeg_evaluate -h`
+
+JPEG evaluation is performed through the following command:
+
+`py -m jpeg_tool.jpeg_evaluate -u <path_to_uncompressed_image> -c <path_to_compressed_image> -m <evaluation_mode>`
+
+To evaluate the single image `vessel.bmp` which has been compressed to produce `compressed.jpeg` we do:
+
+`py -m jpeg_tool.jpeg_evaluate -u test_images/vessel.bmp -c compressed.jpeg -m single`
+
+Or if want to evaluate all images in the `test_images` directory we do:
+
+`py -m jpeg_tool.jpeg_evaluate -m all`
+
+The graph produced will display in browser once the program has finished. Individual metrics can be isolated by selecting the desired one by clicking it in the graph legend.
+
+## Payload Comparison Tool
+
+The payload comparison tool faciliates evaluation of the emebdding and extraction operations in each releveant component. It is used to compare the original and extracted payloads to check for a match.
+
+Help information can viewed at any time. This will indicate how to use the application:
+
+`py -m payload_comparison_tool.payload_recovery_test -h`
+
+Payloads can be compared using the following command:
+
+`py -m payload_comparison_tool.payload_recovery_test -o <path_to_original_payload> -r <path_to_extracted_payload>`
+
+Using an example of `secret.bmp` and `extracted.bmp` we have:
+
+`py -m payload_comparison_tool.payload_recovery_test -o test_images\secret.bmp -r extracted.bmp`
+
+This comparison will produce text in the terminal saying either "Recovered matched original" or "Recovered does not match original.
 
