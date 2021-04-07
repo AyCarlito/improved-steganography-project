@@ -90,6 +90,22 @@ Using the stego of secret.bmp in vessel.bmp:
 
 `py -m detection_tool.stegdetect -m 3 -s stego.bmp`
 
+Additionally, the complexity histogram graph can be viewed if needed. This is the graph which presented the vulnerability that the stego object only case operates around.
+
+To produce the graph as well when evaluating this case we do:
+
+`py -m detection_tool.stegdetect -m 3 -s stego.bmp -g yes`
+
+To compare the impact of the embedding we can view the graphs for the clean cover and subsequent stego image. For example, for the clean cover `vessel.bmp` and stego image `stego.bmp` we can do:
+
+``py -m detection_tool.stegdetect -m 3 -s test_images/vessel.bmp -g yes`
+
+followed by:
+
+`py -m detection_tool.stegdetect -m 3 -s stego.bmp -g yes`
+
+Two complexity histograms would be created and displayed in the browser. Can compare to see the impact of embedding. Individual bitplanes can be isolated by selecting one in the graph legend.
+
 ##### Known Cover and Stego Detection Case
 
 `py -m detection_tool.stegdetect -m 0 -c <path_to_cover_image> -s <path_to_stego_image>`
@@ -128,9 +144,83 @@ Using the stego of secret.bmp in vessel.bmp and the payload secret.bmp:
 
 `py -m detection_tool.stegdetect -m 2 -s stego.bmp -p secret.bmp`
 
+## JPEG Tool
+
+The JPEG tool is responsible for performing two functions: the compression of images using the JPEG compression algorithm, and steganography following compression. 
+
+### Compression
+
+8-bit and 24-bit colour images can be compressed. Implemented compression steps follow the baseline JPEG standard.
+
+Help information can viewed at any time. This will indicate how to use the application:
+
+`py -m jpeg_tool.jpeg_encode -h`
+
+To compress an image, we use the following command:
+
+`py -m jpeg_tool.jpeg_encode -v <path_to_uncompressed_image> -s<path_to_uncompressed_image> -m Compress`
+
+Note that the uncompressed image path must be provided twice. Using the uncompressed "vessel.bmp" as an example:
+
+`py -m jpeg_tool.jpeg_encode -v test_images/vessel.bmp -s test_images/vessel.bmp -m Compress`
+
+Succssful compression will produce the image named `compressed.jpeg` in the current `steganography/` directory.
+
+### Steganography
+
+**NB: Due to the limited capacity of LSB techniques, only 12.5% of vessel bits can be replaced. Meaning most images currently in the test bank are unsuitable for embedding.**
+
+JPEG steganography functions for three implemented techniques: Least Significant Bit (LSB), Third Least Significant Bit (TLSB) and Third Least Significant Bit (TLSBRandom). The embedding process will work for an 8-bit colour cover and 8-bit colour payload, as well as a 24-bit colour cover and 8-bit colour payload. It does not work two 24-bit colour images. Additionally, extraction will only work for two 8-bit colour images. 
+
+Steganography takes place after compression. Both are performed if using any of the command in the following section.
+
+#### Embedding
+
+To embed we use the following command:
+
+`py -m jpeg_tool.jpeg_encode -v <path_to_cover_image> -s<path_to_payload_image> -m <algorithm_choice>`
+
+Using "vessel.bmp" as the cover, "secret.bmp" as the payload and LSB as the algorithm we have:
+
+`py -m jpeg_tool.jpeg_encode -v test_images/vessel.bmp -s test_images/secret.bmp -m LSB`
+
+Using "vessel.bmp" as the cover, "secret.bmp" as the payload and TLSB as the algorithm we have:
+
+`py -m jpeg_tool.jpeg_encode -v test_images/vessel.bmp -s test_images/secret.bmp -m TLSB`
+
+Using "vessel.bmp" as the cover, "secret.bmp" as the payload and TLSBRandom as the algorithm we have:
+
+`py -m jpeg_tool.jpeg_encode -v test_images/vessel.bmp -s test_images/secret.bmp -m TLSBRandom`
+
+A successful emebdding will produce the stego image named `compressed.jpeg` in the current `steganography/` directory.
+
+#### Extraction
+
+Help information can viewed at any time. This will indicate how to use the application:
+
+`py -m jpeg_tool.jpeg_decode -h`
+
+To recover a payload we use the following command: 
+
+`py -m jpeg_tool.jpeg_decode -s <path_to_stego_image> -m <algorithm_choice>`
+
+Using the previously created stego image, "compressed.jpeg" and LSB we have:
+
+`py -m jpeg_tool.jpeg_decode -s compressed.jpeg -m LSB`
+
+Using the previously created stego image, "compressed.jpeg" and TLSB we have:
+
+`py -m jpeg_tool.jpeg_decode -s compressed.jpeg -m TLSB`
+
+Using the previously created stego image, "compressed.jpeg" and TLSBRandom we have:
+
+`py -m jpeg_tool.jpeg_decode -s compressed.jpeg -m TLSBRandom`
+
+Successful extraction will produce the recovered payload `extracted.jpeg` in the current `steganography` directory.
+
+#### Evaluation
+
+Compressed images can be evaluated to produce metrics like Mean Square Error and peak-signal to noise ratio. We can visualise this through a bar chart.
 
 
 
-
-
-Describe how to use your software, if this makes sense for your code. Almost all projects should have at least some instructions on how to run the code. More extensive instructions can be provided here.

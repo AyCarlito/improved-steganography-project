@@ -181,6 +181,7 @@ def create_histogram(stego_complexities):
         bitplane_complexities.append(stego_complexities[i*chunk:i*chunk+chunk])
 
     fig = ff.create_distplot(bitplane_complexities, group_labels, show_hist=False, show_rug=False)
+    fig.update_layout(title_text='Complexity Histogram of image blocks')
     fig.show()
     return
 
