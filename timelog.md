@@ -549,6 +549,21 @@ fixed argparse terminiology -> swapped vessel for cover and secret for payload.
 *0.5 Hour* - Can now select which modification to use in bpcs tool
 *0.5 Hour* - Implementation of known payload case
 
+### 6 April 2021
+
+*0.5 Hour* - Meeting with Supervisor
+*0.5 Hour* - Writeup of meetings and timelog and update plan.md
+*1 Hour* - Data readme
+*0.5 Hour* - Added back option to use LSB in JPEG steganography
+*1 Hour* - Root directory readme
+*2 Hours* - User manual and src readme
+*0.5 Hour* - Can select modifications for known algorithm case in detection tool
+
+*1.5 Hours* Rewrite background section. Leaving lit review till tomorrow.
+*1 Hour* - Rewrite design. And fix references in .bib file.
+
+
+
 
 
 

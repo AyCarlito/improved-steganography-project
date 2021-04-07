@@ -220,7 +220,17 @@ prtiicpants confusing wear and tear for signs of embedding. JPEG results are goo
 
 Will send revised dissertation with all required changes in advance of next meeting.
 
+## Meeting 19 - 6th April 2021
 
+* Meeting Duration: 13:30-14:41
+
+### Discussion
+
+Don't add in reflection section to conclusion chapter, isn't of benefit. (talking about the experience this gave me etc - not needed)
+Add summary sections to chapters to fill in whitespace. 
+Can use any referencing style. Will just stick one in template.
+Keep file extension type in detection tool results tables
+Appendices need chapter headings.
 
 
 
