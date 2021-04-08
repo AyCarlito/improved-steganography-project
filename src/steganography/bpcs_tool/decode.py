@@ -357,7 +357,7 @@ def main():
         complexities = COMPLEXITIES["improved"]
     elif (args.a == "improved" and not args.variable_complexity and args.rbeo):
         random.Random(stego_arr[0].shape[0]).shuffle(bitplanes)
-    else:
+    elif (args.a == "improved" and args.variable_complexity and args.rbeo):
         complexities = COMPLEXITIES["improved"]
         random.Random(stego_arr[0].shape[0]).shuffle(bitplanes)
 
