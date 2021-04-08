@@ -6,7 +6,7 @@ This manual details instructions for use of each system component. General comma
 
 `cd steganography/`
 
-**NB: If using windows, use the `py` alias for pyton. If on Linux, use `python3`. If neither of these work or apply then use the alias you have set on your system.**
+**NB: If using windows, use the `py` alias for python. If on Linux, use `python3`. If neither of these work or apply then use the alias you have set on your system.**
 
 ## BPCS Tool ##
 
