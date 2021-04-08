@@ -562,6 +562,18 @@ fixed argparse terminiology -> swapped vessel for cover and secret for payload.
 *1.5 Hours* Rewrite background section. Leaving lit review till tomorrow.
 *1 Hour* - Rewrite design. And fix references in .bib file.
 
+### 7 April
+
+*3 Hours* - Writing Presentation Slides
+*1.5 Hours* - Recording of slides (excluding 2)
+
+*2 Hours* - Fixing appendices section. Appendices no have chapter headings. Ethics form and google form added etc
+*1 Hour* - Updating example tool usage screenshots to reflect changes to argument parsing.
+*0.5 Hour* - Writing abstract
+*1 Hour* - Writing of summary sections in background, analysis, design and implementation sections.
+*1 Hour* - Finish the meeting the requirements section. This is a table of of requirements, indicating whether they have been met and the evidence for it.
+*0.5 Hour* - Fixed problem with complexities in BPCS tool. - pIcked improved complexities no matter what.
+
 
 
 
