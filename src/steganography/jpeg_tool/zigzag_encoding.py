@@ -16,6 +16,7 @@ ZIGZAGFLAT = np.argsort(ZIGZAGFLATINVERSE)
 def zigzag_single(matrix):
     """
     ZigZag scan over a 8x8 2D array into a 64-element 1D array.
+
     Args:
         numpy.ndarray: 8x8 2D array
     Returns:
@@ -26,6 +27,7 @@ def zigzag_single(matrix):
 def inverse_zigzag_single(array):
     """
     Inverse ZigZag scan over 64-element 1D array into a 8x8 2D array.
+    
     Args:
         numpy.ndarray: 64-element 1D array
     Returns:

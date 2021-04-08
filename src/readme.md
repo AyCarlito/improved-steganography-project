@@ -1,41 +1,57 @@
 # Readme
 
-Put a brief description of your code here. This should at least describe the file structure.
+
+Source code is present in the `steganography/` directory. There are three main components in the system. Directory `bpcs_tool/` contains the code relating to steganography using the BPCS standard and modified algorithm. Directory `jpeg_tool/` contains the code relating to jpeg compression and jpeg steganography. Directory `detection_tool` contains the code relating to the automated detection tool. 
+
+Test images are located in the `test_images/` directory. Directory `tests/` contains the unit tests for the source code. Directory `payload_comparison_tool/` contains the code for the novel comparison tool - this is intended to compare original and extracted payloads.  
+
 
 ## Build instructions
 
-**You must** include the instructions necessary to build and deploy this project successfully. If appropriate, also include 
-instructions to run automated tests. 
+### Getting Started  
 
-### Requirements
+These instructions will get a copy of the project running on your local machine for development, testing and evaluation purposes.
 
-List the all of the pre-requisites software required to set up your project (e.g. compilers, packages, libraries, OS, hardware)
+### Prerequisites
 
-For example:
+Python Version: 3.85 or greater
 
-* Python 3.7
-* Packages: listed in `requirements.txt` 
-* Tested on Windows 10
+Pip Version: 20.0.2 or greater
 
-or another example:
+Opeating System - Windows 10 or Linux Ubuntu
 
-* Requires Raspberry Pi 3 
-* a Linux host machine with the `arm-none-eabi` toolchain (at least version `x.xx`) installed
-* a working LuaJIT installation > 2.1.0
+## Installation
 
-### Build steps
+Clone repository to a directory of your choice. The command for this is as follows:
 
-List the steps required to build software. 
+`git clone https://github.com/AyCarlito/improved-steganography-project`
 
-Hopefully something simple like `pip install -e .` or `make` or `cd build; cmake ..`. In
-some cases you may have much more involved setup required.
+When in the root directory, the required libraries can be installed using the command:
+
+`pip install -r requirements.txt`
+
+This is all that is needed for development, testing and usage.
 
 ### Test steps
 
-List steps needed to show your software works. This might be running a test suite, or just starting the program; but something that could be used to verify your code is working correctly.
+First navigate to the required directory using the following command:
 
-Examples:
+`cd steganography/tests`
 
-* Run automated tests by running `pytest`
-* Start the software by running `bin/editor.exe` and opening the file `examples/example_01.bin`
+Tests can be run in one of two ways. First with pytest:
+
+`pytest tests.py`
+
+Secondly, using the coverage library:
+
+`coverage run -m pytest tests.py`
+
+**NB: If using a virtual environment while running the project, the virtual environment files will need to be omitted otherwise they will be included in the coverage report. This can be performed with the follow command:**
+
+`coverage run --omit="*<name_of_virtual_environment*" -m pytest tests.py`
+
+An example of this, while using the virtual environment ".venv":
+
+`coverage run --omit="*.venv*" -m pytest tests.py`
+
 

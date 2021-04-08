@@ -182,3 +182,418 @@
 
 * *1.5 Hours* Update timelog.md
 * *0.5 Hours Writeup of supervisor meeting
+
+### 4 Dec 2020
+
+* *0.5 Hour* Added sources for zigzag encoding and canonical gray coding.
+* *0.5 Hour* Review of standard BPCS Algorithm
+* *0.5 Hour* Moved Gray coding to standard algorithm
+* *3 Hours* Updated standard algorithm to work for 24-bit colour images. Can now embed grayscale in grayscale, grayscale in colour and colour in colour. 
+* *0.5 Hours* Fixed issue where some grayscale images caused program to crash. Fixed by adding case where image mode is "P" and converting to "L"
+* *0.5 Hours* Restructured Directories. Seperate folders for JPEG, BPSC algorithms and Automated Tool. 
+
+## Project Week
+
+### 8 Dec 2020
+
+* *0.5 Hour* Review of Improved BPCS Algorithm
+* *1 Hour* 1st Improvement - Different complexity threshold for each bit plane. - Can't have threshold higher than 0.5 or will be unable to recover image
+* *1 Hour* 2nd Improvement - Random selection of ordering of bit planes when embedding. Standard algorithm embedds from LSB to MSB, now does so randomly. Provided seed is height of vessel image to ensure random ordering is the same. 
+* *0.5 Hour* Modified 2nd improvement to reduce code required. 
+* *0.5 Hour* Update timelog
+
+### 11 Dec 2020
+
+* *0.5 Hour* Review of JPEG Algorithm
+* *0.5 Hour* Check shape of image read in. (IMG_UNCHANGED) parameter stops cv2 from converting image to 3 channels. Grayscale image will be 2 dimensional, RGB 3 dimensional.
+* *0.5 Hour* Creating separate quantizaiton matrices for luminance and chrominance. 
+* *0.5 Hour* Function to handle an individual channel. Takes a quantization matrix and channel and calls functions to split into blocks and create RLE
+* *0.5 Hour* JPEG Compression now working for colour and grayscale, but compressed image will have green border around outside if image dimensions not divisable by 8.
+* *0.5 Hour* Tried using cv2.copyMakeBorder function to correct problem. Did not work
+* *0.5 Hour* Fixed issue by resizing image as it is read in.
+
+
+### 13 Dec 2020
+
+* *0.5 Hour* Removed functions to create quantization matrices. These are now global variables. 
+* *0.5 Hour* Removed function to pad image which is no longer necessary. 
+* *2 Hours* LSB Steganography. Does not work.
+
+### 14 Dec 2020
+
+* *3 Hours* Created seperate functions to handle grayscale and colour images. Makes use of function to handle single channel.
+* *1 Hour* Fixed LSB steganography by adding paramter to openCV write image.
+
+### 15 Dec 2020
+
+* *2 Hours* Added random LSB steganography.
+* *0.5 Hour* Moved LSB functions to seperate file.
+
+## Christmas Break
+
+## Semester 2
+
+### 4 Jan 2021
+
+* *1 Hour* Motivation section of dissertation introduction. Gave historical example of steganography usage and description of what steganography is.
+* *0.5 Hour* Outline of the differences between simple steganography like LSB and BPCS
+* *0.5 Hour* Reason for JPEG being steganographhy being different.
+
+### 5 Jan 2021
+
+* *1 Hour* List of project aims
+* *1 Hour* Finished off motivation.
+
+### 6 Jan 2021 
+
+* *1 Hour* Skeleton outline of backgrouns chapter. Will be Lit Review followed by explanation of relevant information.
+
+## Week 1
+
+### 12 Jan 2021
+
+* *0.5 Hour* Supervisor meeting
+
+### 15 Jan 2021
+
+* *1 Hour* Started background chapter. Explained terminology and fundamental concepts like bitplanes and pixels.
+* *0.5 Hour* Brief overview of BPCS algorithm.
+* *0.5 Hour* Brief overview of JPEG compression.
+
+### 17 Jan 2021
+
+* *0.5 Hour* Reworked pixels subsection.
+* *1 Hour* Did LSB emebdding section. Added figures to this.
+
+## Week 2
+
+### 18 Jan 2021
+
+* *1 Hour* Explanation of Discrete Cosine Transformation
+* *0.5 Hour* Creation of cosine functions graphed using desmos.
+* *0.5 Hour* DC vs AC Coefficients.
+
+### 19 Jan 2021
+
+* *0.5 Hour* Supervisor meeting
+* *0.5 Hour* Update meetings.md
+* *1 Hour* Update timelog
+
+### 23 Jan 2021
+
+* *1 Hour* Analysis Section of dissertation. Proivded list of requirements (these were written with MoSCoW prioritisation).
+* *1 Hour* Literature Review section in background of disseration.
+
+### 24 Jan 2021
+
+* *0.5 Hour* Created Gantt Chart
+* *1 Hour* Discussed libraries used
+* *0.5 Hour* Rest of implementation
+
+## Week 3
+
+### 31 Jan 2021
+
+* *1 Hour* BPCS Background. Expanded on steps.
+* *0.5 Hour* JPEG Background. Quantization, Zig Zag. RLE
+
+## Week 4
+
+### 1 Feb 2021
+
+* *1 Hour* Steganalysis background. 
+* *0.5 Hour* Design. System architecture and bpcs tool
+
+### 2 Feb 2021
+
+* *1 Hour* Evaluation section. Overview of chapter, experiment methodology, meeting the requirements section.
+
+### 5 Feb 2021
+
+* *0.5 Hour* Background reading of steganalysis paper. Uses histogram analysis to detect.
+* *1 Hour* Tried to implement the steganlaysis technique found in paper, however results of the paper could not be reproduced. (Valley signature did not appear in my own results.)
+* *1 Hour* Implemented a different mechanism for detection. Natural images seemed to have a maximum complexity value of no higher than 0.9. After emebdding it is over 0.9. A simple check for maximum block complexity value enables detection.
+
+### 7 Feb 2021
+
+* *1 Hour* Detection tool section of implementation. Provided overview of te 4 cases and how they were implemented. Also described the new setganalysis technique used insetad of the one specified in the background. 
+
+## Week 5 
+
+### 8 Feb 2021
+
+* *1 Hour* Evaluation section - Test images section outlining what images are uased and where they are sources from. Evaluation of standard algorithm, shows usage of embedding and extractiono of grayscale and colour images. Evaluation of improved algorithm, same as standard just with modifications. 
+
+### 12 Feb 2021
+
+*0.5 Hour* - JPEG Compression section evaluation. Discussed metric to be used such as mean square error and peak signal to noise ratio.
+*0.5 Hour* - Wrote start of conclusion section stating what chapter would be about.
+*0.5 Hour *- Uploaded test images to overleaf and added tables into evaluation section.
+
+### 14 Feb 2021
+
+*0.5 Hour* - Revised system architecture section. 
+*0.5 Hour *- Added User interface section. Describing consistency of design and command line application. 
+*0.5 Hour* - Added maintainability section
+
+## Reading Week
+
+### 15 Feb 2021
+
+*0.5 Hour* Wrote documentation section and added sphinx as library used in implementation.
+*1 Hour *Added more code blocks in implementation section
+
+### 16 Feb 2021
+
+*1.5 Hours* - Performing evaluation of standard BPCS algorithm. Added figures to support claims.
+
+### 17 Feb 2021
+
+*1 Hour*- Adding figures to the modified algorithm evaluation section. 
+*1 Hour*- JPEG Compression evaluation section. Includes table outlining , file name, type, size compressed size and compression ratio.
+
+### 18 Feb 2021
+
+*2 Hours* - Evaluation section, evaluating the modifications and reporting on detection rate. Tables produced for natural images, stegos created from standard algorithm, stegos created from variable complexity, stegos created from RBEO.
+
+### 20 Feb 2021
+
+*1 Hour* - Conclusion section of dissertation. Wrote summary and future work.
+
+## Week 6
+
+*0.5 Hour* - justification of modifications in design section
+*1.5 Hour *- Making system architecture diagrams
+
+### 26 Feb 2021
+
+*0.5 Hour*- Writing textual description of bpcs, jpeg and detection tools and adding architectural diagrams.
+*0.5 Hour*- Rewrote JPEG compression and steganography design.
+*0.5 Hour*- Improved writing of system architecture section.
+
+### 27 Feb 2021
+
+*1 Hour* Rewrote sections in implementation. VErsion control, methodology, development language, issue tracking. 
+
+### 28 Feb 2021
+
+*1 Hour* - lLibraries Used
+
+## Week 7
+
+### 1 March 2021
+
+*1.5 Hour *- implementation section. Writing about bpcs tool and jpeg
+
+### 2 March 2021
+
+*0.5 Hour* Meeting with supervisor.
+
+### 4 March 2021
+
+*1.5 Hours* Rewrite of BPCS tool. Includes additional paragraphs about decoder, metadata. Better explains how gray coding conversion works.
+
+### 5 March 2021
+
+*1.5 Hours* - Rewrite of Detection tool. Explanation of detection cases. Only one figure added. 
+
+### 6 March 2021
+
+*1.5 Hours* - going over code for four cases in detection tool. Removed redundant code. Moved plotly histogram creation to seprate function. Fixed known cover and stego case. updated argparse help command to show all cases that can be chosen.
+*0.5 Hours* - Wrote up past meetings.
+*0.5 Hours* - Writing up timelog. 
+*0.5 Hours* - Added future work based on detection tool.
+*1 Hour* - Rewrite of JPEG implementation.
+
+### 7 March 2021
+
+*0.5 Hour* - Wrote rough outline of JPEG steganography evaluation
+*1 Hour* - Rewrite of JPEG steganography implementation. Discussed problems with OpenCV
+*0.5 Hour* - Write up implementation of run length encoding
+
+## Week 8
+
+### 8 March 2021
+
+*0.5 Hour* - Added figures for JPEG Steganography evaluation section. 
+*0.5 Hour* - Implementation of MSE and PSNR calculaitons. Takes uncompressed and compressed images as parameters. Will be used in JPEG compression evaluation section.
+
+
+### 10 March 2021
+
+*1 Hour* - Added metric section to JPEG compression evaluation
+*1 Hour* - Metrics code now calculated MSE and PSNR for all images in test_images directory.
+
+
+### 11 March 2021
+
+*1.5 Hours* - Started rewrite of evaluation section. Including, summary of chapter, methodolofy and test images section. Added a meeting the requirements section.
+
+### 12 March 2021
+
+*1.5 Hours* - Rewrite of standard algorithm evaluation section. Removed repeated figures. Instead now shoing stego and recovered payload for each part. Example command usage is shown once, rather than every time.
+
+
+### 13 March 2021
+
+*1 Hour* - Started rewrite of modified algorithm evaluation section.
+*0.5 Hour* - Found issue with variable compleixty. High level of degradation, can be fixed by by changing which butplanes are mapped to which threshold. However this renders
+payload unrecoverable in some instances.
+*0.5 Hour* - Reformat of tables. Added centering, captions and horizontal lines. 
+
+### 14 March 2021
+
+*0.5 Hour* - Created table for meeting the requirements section.
+*0.5 Hour* - Added unit testing section in evaluation
+*1 Hour* - Rewrite of comparison of standard and improved BPCS section in evaluation.
+
+## Week 9
+
+### 17 March 2021
+
+*1 Hour* - Documentation of BPCS Encode
+*0.5 Hour* - Documentation of BPCS decode.
+*0.5 Hour* - BPCS encode and encode usage documentation.
+
+### 18 March 2021
+
+*0.5 Hour* - Fixed issue with csv file during JPEG compression. Windows adds an extra carriage return; this was fixed using the "newline=''" flag when writing and appending csv file. Additionally,
+fixed argparse terminiology -> swapped vessel for cover and secret for payload.
+*1.5 Hour* - Documentation of JPEG Decode/Evaluate/LSB_Steganography/ZigZag.
+
+### 19 March 2021
+
+*0.5 Hour* - Documentation of Detection tool.
+*0.5 Hour* - Documentation of JPEG encode.
+*0.5 Hour* - Update meetings, plan and timelog. 
+
+### 20 March 2021
+
+*0.5 Hour* - Added payload comparison tool and documentation for it
+*0.5 Hour* - Changed how known algorithm and stego detection case works. Now checks for memoryerror
+*1 Hour* - Detection tool evaluation 
+*0.5 Hour* - Added figures to test images section and fixed figures in jpeg steganography section.
+
+### 21 March 2021
+*0.5 Hour* - rewrote unit testing and summary part of evaluation
+*0.5 hour* -  fixed figures in modified algorithm.
+*0.5 hour* - outlines visual detection section.
+*0.5 hour* - created google form and images to be used in external participant evaluation. 
+
+## Week 10
+
+### 22 March 2021
+
+*2 hours*- Carried out external participant evaluation
+*1 hour* - write up the visual detection section in evaluation.
+
+### 24 March 2021
+
+*0.5 hour* - added jpeg part to lit review
+*0.5 hour* - fixing of background section up to and including lsb embedding. Also fixed headings of jpeg section in background.
+
+### 25 March 2021
+
+*0.5 Hour* - Rewrite BPCS embedding section of background
+*1.5 Hour* - rewrite of jpeg section of background. Including added figures of zigzag encoding and quantisation tables.
+
+
+### 26 March 2021
+
+*1 Hour* - Rewrite of Analysis section. Change requirements to be split into functional and nonfunctional. Also added description of MoSCoW.
+*1 Hour* - Rewrite of design. Added extra description of detection cases. Moved modifications to subheadings of bpcs tool.
+
+
+### 27 March 2021
+
+*1 Hour* - Rewrite version control. Development methodology, issue tracking. Took out figure of test driven development.
+*1.5 hour* - rewrite libraries and language.
+*0.5 hour* - rewrite user interface section. Maintainability section removed completely and instead summarised in couple sentences and put in rewritten command line application section.
+
+### 28 March 2021
+
+*0.5 Hour* - BPCS tool implementation intro. Rewrite of how argparse is used.
+*0.5 Hour* - Removal of code block figures in BPCS tool implementation and addition of code listings.
+*1.5 Hours* - Further rewrite bpcs tool implementation. - includes pillow reading in images, gray coding conversion. Dictionary of complexity thresholds. Embedding order. And embedding steps and metadata. Also rewrote last paragraph on decoder. 
+
+## Week 11
+
+### 29 March 2021
+
+*2.5 Hours* - Rewrite JPEG tool implementation section.
+
+### 30 March 2021
+
+*2 Hour *- Rewrite detection tool implementation section.
+*1 Hour* - Rewrite evaluation sections unit testing, experiment methodology and test images.
+
+### 1 April 2021
+
+3 Hours - Rewrite visual detection and digital detection section of algorithm comparison in evaluation.
+
+### 2 April 2021
+
+*3 Hours* - Rewrite JPEG compression section
+
+### 4 April 2021
+
+*3 Hours* - Rewrite JPEG steganography
+*3 Hours* - Rewrite conclusion
+
+## Final Week 
+
+### 5 April 2021
+
+*2 Hours* - Created data folder and added evaluation images
+*0.5 Hour* - Rough abstract written
+*0.5 Hour* - Can now select which modification to use in bpcs tool
+*0.5 Hour* - Implementation of known payload case
+
+### 6 April 2021
+
+*0.5 Hour* - Meeting with Supervisor
+*0.5 Hour* - Writeup of meetings and timelog and update plan.md
+*1 Hour* - Data readme
+*0.5 Hour* - Added back option to use LSB in JPEG steganography
+*1 Hour* - Root directory readme
+*2 Hours* - User manual and src readme
+*0.5 Hour* - Can select modifications for known algorithm case in detection tool
+
+*1.5 Hours* Rewrite background section. Leaving lit review till tomorrow.
+*1 Hour* - Rewrite design. And fix references in .bib file.
+
+### 7 April
+
+*3 Hours* - Writing Presentation Slides
+*1.5 Hours* - Recording of slides (excluding 2)
+
+*2 Hours* - Fixing appendices section. Appendices no have chapter headings. Ethics form and google form added etc
+*1 Hour* - Updating example tool usage screenshots to reflect changes to argument parsing.
+*0.5 Hour* - Writing abstract
+*1 Hour* - Writing of summary sections in background, analysis, design and implementation sections.
+*1 Hour* - Finish the meeting the requirements section. This is a table of of requirements, indicating whether they have been met and the evidence for it.
+*0.5 Hour* - Fixed problem with complexities in BPCS tool. - pIcked improved complexities no matter what.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

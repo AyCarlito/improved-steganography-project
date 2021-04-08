@@ -1,27 +1,55 @@
-# Guidance
-This is a suggested template for a project. You can modify it as you please, but
-but remember to keep:
+# Improved Steganography Algorithm - L4 Project 
 
-* a timelog, updated regularly in the `timelog.md` format;
-* all source under version control;
-* data well organised and with appropriate ethical approval (for human subject data);
+Repository for Level 4 Invididual Project, containing code, timelog, dissertation and related documentation. The Project supervisor was Dr Ron Poet.
 
-Here's an overview of the structure as it stands:
+## Project Proposal 
+Stegonography is a way of hiding in plain sight. A secret payload is embedded in a cover object, typically an image, without making any visible changes. The standard algorithm is the Bit Plane Complexity Segment algorithm. Steganography can be detected by digital analysis of the image, and there are techniques to try and prevent digital artefacts from being present. This project will evaluate several techniques for improving the BPCS algorithm. It will also investigate ways of using lossy image compression algorithms such as jpeg with steganography.
 
-* `timelog.md` The time log for your project.
-* `plan.md` A skeleton week-by-week plan for the project. 
-* `data/` data you acquire during the project
-* `src/` source code for your project
-* `status_report/` the status report submitted in December
-* `meetings/` Records of the meetings you have during the project.
-* `dissertation/` source and for your project dissertation
-* `presentation/` your presentation
+## Getting Started  
 
-* Make sure you add a `.gitignore` or similar for your VCS for the tools you are using!
-* Add any appropriate continuous integration (e.g. Travis CI) in this directory.
+These instructions will get a copy of the project running on your local machine for development, testing and evaluation purposes.
 
-* Remove this `readme.md` file from any repository and replace it with something more appropriate!
+### Prerequisites
 
-## Important
-* It should be easy to rebuild and run your project and your dissertation
-        * Include clear instructions in the relevant directories to make this possible
+Python Version: 3.85 or greater
+
+Pip Version: 20.0.2 or greater
+
+Opeating System - Windows 10 or Linux Ubuntu
+
+## Installation
+
+Clone repository to a directory of your choice. The command for this is as follows:
+
+`git clone https://github.com/AyCarlito/improved-steganography-project`
+
+When in the root directory, the required libraries can be installed using the command:
+
+`pip install -r requirements.txt`
+
+This is all that is needed for development, testing and usage.
+
+## Documentation
+Source code documentation, generated using sphinx can be created through the following command:
+
+```
+cd docs
+make html
+```
+
+The resulting documentation is available to view by opening the `docs/build/html/index.html` file. 
+
+* Timelog - `timelog.md`
+* Meetings - `meetings.md`
+* Plan - `plan.md`
+* Status Report - `status_report/status_report_template.tex`
+
+
+## Dissertation
+
+The project dissertation can be built with pdflatex. Alternatively, a prebuilt pdf file is available to view in the `dissertation/` directory. 
+
+## Usage
+
+For usage of the developed system refer to the `manual.md` file in the `src/` directory. If performing evaluation, the data used during evaluation is present in the `data/` directory. This directory includes a `readme.md` file to provide an overview of what data is present. 
+
