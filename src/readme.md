@@ -22,10 +22,6 @@ Opeating System - Windows 10 or Linux Ubuntu
 
 ## Installation
 
-Clone repository to a directory of your choice. The command for this is as follows:
-
-`git clone https://github.com/AyCarlito/improved-steganography-project`
-
 When in the root directory, the required libraries can be installed using the command:
 
 `pip install -r requirements.txt`
