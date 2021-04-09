@@ -583,3 +583,5 @@ fixed argparse terminiology -> swapped vessel for cover and secret for payload.
 *0.5 Hour* - Cutting conclusion section to be 2 pages.
 *0.5 Hour* - Added graphs to implementation section showing the vulnerabilitiy exploited by the JPEG tool.
 
+*2 Hours* Rewrite lit review
+*1 Hour* Sorting submission file
