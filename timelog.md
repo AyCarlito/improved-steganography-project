@@ -574,26 +574,14 @@ fixed argparse terminiology -> swapped vessel for cover and secret for payload.
 *1 Hour* - Finish the meeting the requirements section. This is a table of of requirements, indicating whether they have been met and the evidence for it.
 *0.5 Hour* - Fixed problem with complexities in BPCS tool. - pIcked improved complexities no matter what.
 
+### 8 April
 
+*1.5 Hour* Finish recordings 
+*1.5 Hours - Editing of video
 
+*5 Hours* - Going over entire dissertation from start. Made it to JPEG compression in implementation. This included references and checking for grammar.
+*0.5 Hour* - Cutting conclusion section to be 2 pages.
+*0.5 Hour* - Added graphs to implementation section showing the vulnerabilitiy exploited by the JPEG tool.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*2 Hours* Rewrite lit review
+*1 Hour* Sorting submission file
