@@ -25,6 +25,10 @@ Clone repository to a directory of your choice. The command for this is as follo
 
 When in the root directory, the required libraries can be installed using the command:
 
+`py -m pip install -r requirements.txt`
+
+or:
+
 `pip install -r requirements.txt`
 
 This is all that is needed for development, testing and usage.
